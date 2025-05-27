@@ -1,9 +1,9 @@
 import "./App.css";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import UserLayout from "./layouts/userLayout";
 import Signup from "./components/Signup";
 import OtpLogin from "./components/OtpLogin";
 import Login from "./components/Signin";
+import UserLayout from "./layouts/MainLayout";
 
 function App() {
   return (
