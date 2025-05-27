@@ -1,10 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 export default function Login() {
   return (
     <div className="min-h-screen bg-green-50 flex items-center justify-center">
       <div className="bg-white w-full max-w-xs rounded-2xl shadow-xl p-6 space-y-5 text-center">
-        
         {/* Logo */}
         <img
           src="https://www.smartlogger.tn/smart-irrigation-admin/assets/img/brand/logo-full.png"
@@ -20,10 +19,10 @@ export default function Login() {
         />
 
         {/* Welcome Text */}
-        <h1 className="text-xl font-semibold text-green-800">Welcome Farmer!</h1>
-        <p className="text-sm text-gray-600">
-          Grow smarter with technology. Choose your path to continue.
-        </p>
+        <h1 className="text-xl font-semibold text-green-800">
+          Welcome Farmer!
+        </h1>
+        <p className="text-sm text-gray-600">Grow smarter with technology.</p>
 
         {/* Buttons */}
         <div className="flex flex-col space-y-3 mt-4">
