@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -34,10 +34,11 @@ export default function Home() {
       {/* CTA Button */}
       <button
         onClick={handleStart}
-        className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-green-700 transition w-full max-w-xs"
+        className="bg-green-600 text-white cursor-pointer px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-green-700 transition w-full max-w-xs"
       >
         Get Started
       </button>
+      <Link className="text-center mt-3 underline text-sm md:text-lg" to="/map">Visit Map</Link>
     </div>
   );
 }
