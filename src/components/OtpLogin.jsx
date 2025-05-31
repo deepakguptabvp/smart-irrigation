@@ -1,21 +1,118 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+// import axios from "axios";
+import toast from "react-hot-toast";
+import Cookies from "js-cookie";
+import UserAxiosAPI from "../api/userAxiosAPI";
 
-export default function OtpLogin() {
+export default function OtpLogin({user, setUser}) {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [sdkLoaded, setSdkLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const axios = UserAxiosAPI();
 
-  const handleSendOtp = () => {
-    // simulate send OTP
-    setOtpSent(true);
+  // Load OTPless SDK
+  useEffect(() => {
+    if (!sdkLoaded) {
+      const script = document.createElement("script");
+      script.id = "otpless-sdk";
+      script.src = "https://otpless.com/v4/headless.js";
+      script.setAttribute("data-appid", "C0JRVF5U1R1JG0NL7PCU");
+      script.onload = () => {
+        setSdkLoaded(true);
+        initializeOtpless();
+      };
+      document.head.appendChild(script);
+      return () => {
+        document.head.removeChild(script);
+      };
+    }
+  }, [sdkLoaded]);
+
+  // Initialize OTPless
+  const initializeOtpless = () => {
+    if (!window.OTPless) return;
+
+    const callback = (eventCallback) => {
+      const eventHandlers = {
+        OTP_AUTO_READ: () => {
+          const {
+            response: { otp },
+          } = eventCallback;
+          setOtp(otp);
+          toast.success("OTP auto-read");
+        },
+        FAILED: () => console.error("Authentication Failed", eventCallback),
+        FALLBACK_TRIGGERED: () =>
+          console.warn("Fallback Triggered", eventCallback),
+      };
+
+      if (eventHandlers[eventCallback.responseType]) {
+        eventHandlers[eventCallback.responseType]();
+      }
+    };
+
+    window.OTPlessSignin = new window.OTPless(callback);
   };
 
-  const handleVerifyOtp = () => {
-    // simulate OTP verification
-      navigate("/addfield")
+  // Send OTP
+  const handleSendOtp = () => {
+    if (!window.OTPlessSignin || !phone.trim()) {
+      toast.error("Please enter a valid phone number.");
+      return;
+    }
+
+    window.OTPlessSignin.initiate({
+      channel: "PHONE",
+      phone,
+      countryCode: "+91",
+    });
+
+    setOtpSent(true);
+    toast.success("OTP sent!");
+  };
+
+  // Verify OTP
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length < 6) {
+      toast.error("Invalid OTP");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await window.OTPlessSignin.verify({
+        channel: "PHONE",
+        phone,
+        otp,
+        countryCode: "+91",
+      });
+
+      if (response.success === true) {
+        toast.success("OTP Verified");
+
+        // Call your login API
+        const { data } = await axios.post("/user/login", {
+          phone,
+          type: "PHONE",
+        });
+        setUser(data?.user)
+        Cookies.set("SIUserToken", data?.token, { expires: 30 });
+        navigate("/addfield");
+      } else {
+        toast.error(response?.errorMessage || "Verification failed");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,7 +137,6 @@ export default function OtpLogin() {
 
         {!otpSent ? (
           <>
-            {/* Phone Input */}
             <input
               type="tel"
               maxLength={10}
@@ -50,7 +146,6 @@ export default function OtpLogin() {
               className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
             />
 
-            {/* Send OTP Button */}
             <button
               onClick={handleSendOtp}
               disabled={!phone}
@@ -61,7 +156,6 @@ export default function OtpLogin() {
           </>
         ) : (
           <>
-            {/* OTP Input */}
             <input
               type="text"
               maxLength={6}
@@ -71,13 +165,12 @@ export default function OtpLogin() {
               className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
             />
 
-            {/* Verify OTP Button */}
             <button
               onClick={handleVerifyOtp}
-              disabled={!otp}
+              disabled={!otp || loading}
               className="w-full mt-1 bg-green-500 text-white py-2 rounded-lg font-medium hover:bg-green-600 transition disabled:opacity-50"
             >
-              Verify OTP
+              {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </>
         )}
