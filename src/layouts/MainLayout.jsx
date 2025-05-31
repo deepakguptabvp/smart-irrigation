@@ -3,9 +3,8 @@ import { Outlet } from "react-router-dom";
 const UserLayout = () => {
   return (
     <>
-      {/* <Navbar /> */}
       <div>
-        {/* <Home/> */}
+        {/* sidebar */}
         <Outlet />
       </div>
     </>
