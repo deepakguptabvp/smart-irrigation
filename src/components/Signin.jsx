@@ -2,13 +2,13 @@ import { Link } from "react-router-dom";
 
 export default function Login() {
   return (
-    <div className="min-h-screen bg-green-50 flex items-center justify-center">
-      <div className="bg-white w-full max-w-xs rounded-2xl shadow-xl p-6 space-y-5 text-center">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-green-50">
+      <div className="w-full max-w-xs rounded-2xl shadow-xl p-6 space-y-5 text-center">
         {/* Logo */}
         <img
           src="https://www.smartlogger.tn/smart-irrigation-admin/assets/img/brand/logo-full.png"
           alt="Logo"
-          className="w-16 h-16 mx-auto mb-2"
+          className="w-16 h-16 mb-4 mx-auto"
         />
 
         {/* Banner Image */}
