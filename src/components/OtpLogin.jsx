@@ -103,7 +103,7 @@ export default function OtpLogin({user, setUser}) {
         });
         setUser(data?.user)
         Cookies.set("SIUserToken", data?.token, { expires: 30 });
-        navigate("/addfield");
+        navigate("/landingpage");
       } else {
         toast.error(response?.errorMessage || "Verification failed");
       }
