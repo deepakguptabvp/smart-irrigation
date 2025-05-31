@@ -7,7 +7,6 @@ import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { CgProfile } from "react-icons/cg";
 
 import PumpCalculator from "./PumpCalculator";
-import EditField from "./EditField";
 import SatelliteData from "./SatelliteData";
 import SoilSensors from "./SoilSensors";
 import WeatherForecast from "./WeatherForecast";
@@ -66,10 +65,10 @@ const LandingPage = ({user, setUser}) => {
       <div
         className={`${
           sidebarOpen ? "block" : "hidden"
-        } fixed z-30 md:static md:block top-0 left-0 md:w-64 w-4/5 h-[100vh] bg-white shadow-lg p-3 transition-all duration-300 ease-in-out`}
+        } fixed z-30 md:static md:block top-0 left-0 md:w-64 w-4/5 h-[100vh] bg-white shadow-lg p-3  transition-all duration-300 ease-in-out`}
       >
         {/* Sidebar Profile */}
-        <div className="h-40 bg-green-100 rounded-xl flex flex-col items-center justify-center space-y-2">
+        <div className="h-40 bg-green-100 rounded-xl flex flex-col items-center justify-center space-y-2 mb-4">
           <CgProfile size={48} className="text-green-700" />
           <span className="text-lg font-semibold text-green-800">
             {user?.name||"User"}
