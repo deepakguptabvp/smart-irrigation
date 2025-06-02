@@ -23,11 +23,16 @@ const EditField = () => {
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white shadow-md rounded-lg">
-      <h2 className="text-xl font-bold text-green-700 mb-4">Edit Field Details</h2>
+      <h2 className="text-xl font-bold text-green-700 mb-4">
+        Edit Field Details
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Field Name */}
         <div>
-          <label htmlFor="fieldName" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="fieldName"
+            className="block text-sm font-medium text-gray-700"
+          >
             Field Name
           </label>
           <input
@@ -43,7 +48,10 @@ const EditField = () => {
 
         {/* Area */}
         <div>
-          <label htmlFor="area" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="area"
+            className="block text-sm font-medium text-gray-700"
+          >
             Area (in acres)
           </label>
           <input
@@ -59,7 +67,10 @@ const EditField = () => {
 
         {/* Crop Type */}
         <div>
-          <label htmlFor="cropType" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="cropType"
+            className="block text-sm font-medium text-gray-700"
+          >
             Crop Type
           </label>
           <input
