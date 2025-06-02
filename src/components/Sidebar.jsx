@@ -5,9 +5,11 @@ import { GrSatellite } from "react-icons/gr";
 import { CgProfile } from "react-icons/cg";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { HiX } from "react-icons/hi";
+import { useContext } from "react";
+import { webState } from "../App";
 
 const Sidebar = ({
-  user,
+  
   activeSection,
   setActiveSection,
   sidebarOpen,
@@ -27,12 +29,12 @@ const Sidebar = ({
       {label}
     </button>
   );
-
+const{user} = useContext(webState)
   return (
     <div
       className={`${
         sidebarOpen ? "block" : "hidden"
-      } fixed z-30 md:static md:block top-0 left-0 md:w-64 w-4/5 h-full bg-white shadow-lg p-3 transition-all duration-300 ease-in-out`}
+      } fixed z-30 h-[100vh] md:static md:block top-0 left-0 md:w-64 w-4/5  bg-white shadow-lg p-3 transition-all duration-300 ease-in-out`}
     >
       {/* Close Button (Mobile only) */}
       <div className="md:hidden flex justify-end mb-2">
@@ -53,11 +55,12 @@ const Sidebar = ({
       </div>
 
       {/* Menu Items */}
+      <MenuButton icon={MdEditNote} label="Dashboard" value="dashboard" />
       <MenuButton icon={MdEditNote} label="Edit Field" value="addfield" />
       <MenuButton icon={() => <span className="text-md mr-2">💧</span>} label="Pump Calculator" value="pump-calculator" />
       <MenuButton icon={GrSatellite} label="Satellite Data" value="satellite-data" />
       <MenuButton icon={MdSensors} label="Soil Sensors" value="soil-sensors" />
-      <MenuButton icon={FaMapMarkedAlt} label="Map Polygon" value="map-polygon" />
+      {/* <MenuButton icon={FaMapMarkedAlt} label="Map Polygon" value="map-polygon" /> */}
       <MenuButton icon={TiWeatherPartlySunny} label="Weather Forecast" value="weather-forecast" />
       <MenuButton icon={PiNotebookFill} label="About Us" value="about-us" />
     </div>

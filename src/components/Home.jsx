@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
+import UserAxiosAPI from "../api/userAxiosAPI";
+import { useContext, useEffect } from "react";
+import { webState } from "../App";
 
 export default function Home() {
   const navigate = useNavigate();
-
   const handleStart = () => {
     navigate("/login");
   };

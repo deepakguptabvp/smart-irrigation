@@ -11,16 +11,19 @@ import Sidebar from "./Sidebar";
 import { FaCloudRain, FaDroplet, FaPlay } from "react-icons/fa6";
 import { IoMdWarning } from "react-icons/io";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import Dashboard from "./dashboard/Dashboard";
 
 const LandingPage = ({ user }) => {
-  const [activeSection, setActiveSection] = useState("");
+  const [activeSection, setActiveSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tab, setTab] = useState("today");
 
   const renderContent = () => {
     switch (activeSection) {
+      case "dashboard":
+        return <Dashboard />;
       case "addfield":
-        return <AddField />;
+        return <AddField use={user} />;
       case "pump-calculator":
         return <PumpCalculator />;
       case "satellite-data":

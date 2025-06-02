@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import UserAxiosAPI from "../api/userAxiosAPI";
 
-export default function OtpLogin({user, setUser}) {
+export default function OtpLogin({ user, setUser }) {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -103,7 +103,11 @@ export default function OtpLogin({user, setUser}) {
         });
         setUser(data?.user)
         Cookies.set("SIUserToken", data?.token, { expires: 30 });
-        navigate("/landingpage");
+        if (data?.user?.fields?.length) {
+          navigate("/landingpage")
+        } else {
+          navigate("/addfield");
+        }
       } else {
         toast.error(response?.errorMessage || "Verification failed");
       }

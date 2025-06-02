@@ -11,7 +11,7 @@ import { FaMapMarkerAlt, FaSearchLocation, FaDownload } from "react-icons/fa";
 
 const containerStyle = {
     width: "100%",
-    height: "85vh",
+    height: "35vh",
 };
 
 const defaultCenter = {
@@ -19,7 +19,7 @@ const defaultCenter = {
     lng: 78.9629,
 };
 
-const MapWithDrawing = () => {
+const MapWithDrawing = ({setCoordinates}) => {
     const [center, setCenter] = useState(defaultCenter);
     const [polygonPath, setPolygonPath] = useState([]);
     const [kmlData, setKmlData] = useState("");
@@ -37,33 +37,18 @@ const MapWithDrawing = () => {
                 lat: latLng.lat(),
                 lng: latLng.lng(),
             }));
+        
         setPolygonPath(path);
     };
 
     const convertToKML = async () => {
         try {
-            const response = await axios.post(
-                "https://map-backend-nine.vercel.app/api/convert-to-kml",
-                {
-                    coordinates: polygonPath,
-                }
-            );
-
-            const kmlContent = response.data.kml;
-            setKmlData(kmlContent);
-
-            // Create a Blob from the KML content
-            const blob = new Blob([kmlContent], { type: "application/vnd.google-earth.kml+xml" });
-
-            // Create a temporary anchor element for download
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "polygon.kml";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url); // Cleanup
+            console.log(polygonPath)
+            const formattedCoordinates = [
+            polygonPath.map(coord => [coord.lng, coord.lat])
+        ];
+        // setKmlData(formattedCoordinates);
+        setCoordinates(formattedCoordinates);
         } catch (error) {
             console.error("Error converting to KML", error);
         }
@@ -101,13 +86,9 @@ const MapWithDrawing = () => {
     };
 
     return (
-        <div className="w-full">
-            <LoadScript
-                googleMapsApiKey="AIzaSyDkxwT1OheCGFd0Y4618qX9AIYsopibBRk"
-                libraries={["places", "drawing"]}
-            >
+        <div className="w-full max-h-60 h-auto">
                 {/* Navbar Filters */}
-                <div className="bg-white shadow-md px-6 py-4 flex flex-wrap items-center gap-4 justify-between">
+                <div className="bg-white shadow-md px-3 py-4 flex flex-wrap items-center gap-4 justify-between">
                     {/* Search by place */}
                     <div className="flex items-center gap-2 flex-1 min-w-[220px]">
                         <FaSearchLocation className="text-blue-600" />
@@ -124,7 +105,7 @@ const MapWithDrawing = () => {
                     </div>
 
                     {/* Lat, Lng search */}
-                    <form
+                    {/* <form
                         onSubmit={handleLatLngSubmit}
                         className="flex items-center gap-2"
                     >
@@ -136,13 +117,7 @@ const MapWithDrawing = () => {
                             onChange={(e) => setSearchInput(e.target.value)}
                             className="p-2 w-48 border border-gray-300 rounded-md focus:ring focus:ring-green-400"
                         />
-                        <button
-                            type="submit"
-                            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-                        >
-                            Go
-                        </button>
-                    </form>
+                    </form> */}
 
                     {/* KML Button */}
                     <button
@@ -153,12 +128,13 @@ const MapWithDrawing = () => {
                                 : "bg-blue-600 text-white hover:bg-blue-700"
                             }`}
                     >
-                        <FaDownload />
-                        Export KML
+                        {/* <FaDownload /> */}
+                        Save
                     </button>
                 </div>
 
                 {/* Map */}
+                <div className="max-h-[40vh]">
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={center}
@@ -177,6 +153,7 @@ const MapWithDrawing = () => {
                                 fillColor: "#00FF00",
                                 fillOpacity: 0.2,
                                 strokeWeight: 2,
+                                strokeColor: "#FF0000",
                                 clickable: false,
                                 editable: false,
                                 zIndex: 1,
@@ -184,10 +161,10 @@ const MapWithDrawing = () => {
                         }}
                     />
                 </GoogleMap>
-            </LoadScript>
+                </div>
 
             {/* KML Output */}
-            {kmlData && (
+            {/* {kmlData && (
                 <div className="p-6 bg-gray-100 border-t border-gray-300">
                     <h3 className="text-lg font-semibold mb-2 text-gray-700">KML Output:</h3>
                     <textarea
@@ -197,7 +174,7 @@ const MapWithDrawing = () => {
                         className="w-full p-4 text-sm font-mono bg-white border border-gray-300 rounded shadow resize-none"
                     />
                 </div>
-            )}
+            )} */}
         </div>
     );
 };

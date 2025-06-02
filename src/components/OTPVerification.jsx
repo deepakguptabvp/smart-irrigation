@@ -137,7 +137,8 @@ export default function OTPVerification({ formData, user, setUser }) {
         setUser(res.data.user)
         toast.success("Account Created!");
         localStorage.setItem("SIUserToken", res.data.token);
-        navigate("/landingpage");
+
+        navigate("/addfield");
       } else {
         if (response.statusCode === 400) {
           setError(response.errorMessage || "Invalid OTP");
