@@ -53,7 +53,7 @@ export default function NDMIMapWithStreetView({
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <Polygon
             positions={latLngs}
-            color={"blue"}
+            color={"red"}
             fillColor={dominantColor}
             fillOpacity={1}
           />
@@ -86,7 +86,7 @@ export default function NDMIMapWithStreetView({
 
       {/* NDMI Legend (Always visible) */}
       {!showStreetView && (
-        <div style={{zIndex:200}} className="absolute top-20 right-2 bg-white/90 p-3 rounded shadow-md text-xs max-w-[200px] overflow-y-auto max-h-[90%]">
+        <div style={{zIndex:200}} className="absolute top-20 right-2 bg-black/10 p-3 rounded shadow-md text-xs max-w-[200px] overflow-y-auto max-h-[90%]">
           <div className="font-semibold mb-1 text-center">NDMI Legend</div>
           <ul>
             {legend?.map(({ label, color }) => (

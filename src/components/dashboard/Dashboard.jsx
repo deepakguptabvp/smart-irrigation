@@ -11,6 +11,23 @@ import NDMIMap from "./NDMIMap";
 import { IoMdWarning } from "react-icons/io";
 import { FaCloudSun, FaCloudRain, FaSun, FaCloud } from "react-icons/fa";
 import { webState } from "../../App";
+const schedule = [
+  { "week": 1, "description": "Emergence", "inches": 1, "liters": 102790 },
+  { "week": 2, "description": "Seedling", "inches": 1, "liters": 102790 },
+  { "week": 3, "description": "Seedling", "inches": 2, "liters": 205580 },
+  { "week": 4, "description": "Early Veg.", "inches": 2, "liters": 205580 },
+  { "week": 5, "description": "Veg. Growth", "inches": 2, "liters": 205580 },
+  { "week": 6, "description": "Veg. Growth", "inches": 2, "liters": 205580 },
+  { "week": 7, "description": "Square Init.", "inches": 2, "liters": 205580 },
+  { "week": 8, "description": "Squaring", "inches": 2, "liters": 205580 },
+  { "week": 9, "description": "Flowering", "inches": 2, "liters": 205580 },
+  { "week": 10, "description": "Peak Flower", "inches": 2, "liters": 205580 },
+  { "week": 11, "description": "Boll Form.", "inches": 2, "liters": 205580 },
+  { "week": 12, "description": "Boll Dev.", "inches": 2, "liters": 205580 },
+  { "week": 13, "description": "Boll Dev.", "inches": 2, "liters": 205580 },
+  { "week": 14, "description": "Maturity", "inches": 1.25, "liters": 128500 },
+  { "week": 15, "description": "Maturity", "inches": 0.5, "liters": 51500 }
+]
 
 const Dashboard = () => {
     const [advice, setAdvice] = useState("");
@@ -20,7 +37,7 @@ const Dashboard = () => {
     const [ndmiImage, setNdmiImage] = useState("");
     const [loading, setLoading] = useState(true);
     const [ndmi, setNdmi] = useState("");
-    
+
     const getAdvice = (code, temp) => {
         if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) {
             // Rainy or drizzle
@@ -88,6 +105,14 @@ const Dashboard = () => {
         }
         return <FaCloudSun size={30} className="mx-auto" />;
     };
+    const sowingDate = new Date("2025-03-01"); // Example sowing date
+    const today = new Date();
+    const daysSinceSowing = Math.floor((today - sowingDate) / (1000 * 60 * 60 * 24));
+    const currentWeek = Math.floor(daysSinceSowing / 7) + 1;
+    const currentDay = daysSinceSowing + 1;
+
+    // Get current irrigation data
+    const irrigationData = schedule.find(item => item.week === currentWeek);
     useEffect(() => {
         if (user) {
             console.log(user)
@@ -117,19 +142,20 @@ const Dashboard = () => {
 
             {/* Alerts */}
             <div className="flex justify-between items-center space-x-2">
-                <div className="w-3/4 flex-1 flex items-center space-x-2">
+                <div className="w-3/4 flex-1 flex border border-gray-500 p-2 items-center space-x-2">
                     <IoMdWarning size={50} className="text-red-600" />
                     <span className="text-sm font-semibold">{loading ? "Loading advice..." : advice}</span>
                 </div>
 
                 <div className="w-1/4 text-center p-2 border rounded-lg bg-white">
                     {loading ? "..." : getIcon()}
-                    <p className="text-lg mt-1">{loading ? "" : `${weather.temperature}°C`}</p>
+                    <p className="text-lg mt-1">{loading ? "" : `${weather?.temperature}°C`}</p>
                 </div>
             </div>
             {ndmi ? <NDMIMap coordinates={user?.fields[0]?.coordinates?.[0]} legend={ndmi?.legend} area_summary_ha={ndmi?.area_summary_ha} ndmiBase64={ndmiImage} ndmiBounds={user?.fields[0]?.coordinates} /> : <div className="flex justify-center my-6">Please Wait...</div>}
             {/* <MoistureMapWithLegend img={ndmiImage} /> */}
             {/* Satellite Image */}
+            {/* 78.6800480473868, 20.47719919671666,78.68043249745475, 20.477961387625218,78.68120139693579, 20.477777121886653,78.68094211716758, 20.47688091778385 */}
             {/* <div className="relative">
                 <img
                     src={
@@ -172,32 +198,30 @@ const Dashboard = () => {
 
                 {/* Tracker Content */}
                 {/* Tracker Content */}
-                {tab === "today" && (
+                {tab === "today" && irrigationData && (
                     <div className="mt-4 text-center flex justify-around space-y-3">
                         <div className="flex flex-col justify-around my-8 gap-6">
-                            <p className="text-xs text-gray-500">12.2.25</p>
+                            <p className="text-xs text-gray-500">Week {currentWeek}, Day {currentDay}</p>
                             <div>
                                 <div className="flex justify-center gap-1">
-                                    {[...Array(3)].map((_, i) => (
-                                        <PiDropThin key={i} className=" text-4xl" />
+                                    {[...Array(irrigationData)].map((_, i) => (
+                                        <PiDropThin key={i} className="text-4xl" />
                                     ))}
                                 </div>
-                                <div className="text-lg font-semibold">3 inches</div>
+                                <div className="text-lg font-semibold">{irrigationData.inches} inches</div>
                             </div>
                         </div>
                         <div className="flex flex-col justify-around my-8 gap-6">
                             <div className="flex justify-center items-center gap-2 text-sm">
-                                <FaArrowUpFromWaterPump className="text-5xl"
-                                />
-                                <span className="font-bold">1 hour</span> today
+                                <FaArrowUpFromWaterPump className="text-5xl" />
+                                <span className="font-bold">~{Math.round(irrigationData.liters / 308370)} hour</span> today
                             </div>
                             <div className="flex justify-center items-center font-bold text-xl">
-                                <button className="flex items-center justify-center  rounded-full px-4 py-2 text-sm font-medium text-gray-800 mt-1">
+                                <button className="flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-gray-800 mt-1">
                                     <TfiAlarmClock className="text-4xl text-gray-800" />
                                 </button>
                                 Start Timer
                             </div>
-
                         </div>
                     </div>
                 )}
