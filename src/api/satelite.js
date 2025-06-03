@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const fetchNDMI = async (geometry) => {
   const res = await axios.post(
-    "https://cors-anywhere.herokuapp.com/https://server.cropgenapp.com/get-vegetation-index",
+    "https://server.cropgenapp.com/get-vegetation-index",
     {
       start_date: "2025-05-15",
       end_date: "2025-05-31",
