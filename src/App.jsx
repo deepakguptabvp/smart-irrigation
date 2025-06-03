@@ -16,9 +16,10 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyDkxwT1OheCGFd0Y4618qX9AIYsopibBRk";
 const webState = createContext();
 function App() {
   const [user, setUser] = useState(null);
+  const [field, setField] = useState([]);
   console.log(user)
   return (
-    <webState.Provider value={{setUser, user}}>
+    <webState.Provider value={{setUser, user, field, setField}}>
        <LoadScript
       googleMapsApiKey={GOOGLE_MAPS_API_KEY}
       libraries={["places", "drawing"]}

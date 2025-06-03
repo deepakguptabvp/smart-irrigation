@@ -102,6 +102,7 @@ export default function OtpLogin({ user, setUser }) {
           type: "PHONE",
         });
         setUser(data?.user)
+        setField(data?.user?.fields?.[0])
         Cookies.set("SIUserToken", data?.token, { expires: 30 });
         if (data?.user?.fields?.length) {
           navigate("/landingpage")

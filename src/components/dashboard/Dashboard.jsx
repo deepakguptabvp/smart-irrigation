@@ -12,7 +12,7 @@ import MoistureMapWithLegend from "./Test";
 import { webState } from "../../App";
 const Dashboard = () => {
 
-    const { user } = useContext(webState);
+    const { user, setField, field } = useContext(webState);
     const [tab, setTab] = useState("today");
     const [weather, setWeather] = useState(null);
     const [ndmiImage, setNdmiImage] = useState("");
@@ -20,7 +20,7 @@ const Dashboard = () => {
     const fetchData = async () => {
         try {
             console.log(user);
-            const geometry = user?.fields[0]?.coordinates;
+            const geometry = field?.coordinates;
 
             const ndmi = await fetchNDMI(geometry);
             setNdmiImage(ndmi.image_base64);
@@ -34,13 +34,27 @@ const Dashboard = () => {
             console.log(user)
             fetchData();
         }
-    }, [user]);
+    }, [user,field]);
     return (
-        <div className="p-4 space-y-4">
+        <div className="md:p-4 space-y-4">
             {/* Header */}
             <div className="w-full flex justify-center">
-                <button className="text-xl font-bold">My Field ▼</button>
+                <select
+                    className="text-xl font-bold p-2 rounded border border-gray-300"
+                    value={field}
+                    onChange={(e) => setField(e.target.value)}
+                >
+                    <option value="" disabled>
+                        My Field ▼
+                    </option>
+                    {user?.fields.map((fieldItem, index) => (
+                        <option key={index} value={fieldItem}>
+                            field-{index+1}
+                        </option>
+                    ))}
+                </select>
             </div>
+
 
             {/* Alerts */}
             <div className="flex justify-between items-center space-x-2">
@@ -140,14 +154,14 @@ const Dashboard = () => {
                             { day: "Sunday", inches: 3, mins: 60, hr: 1 },
                             { day: "Monday", inches: 2, mins: 45 },
                             { day: "Tuesday", inches: 2, mins: 45 },
-                            { day: "Wednesday", inches: 2, mins: 30 },
+                            { day: "Wed.day", inches: 2, mins: 30 },
                             { day: "Thursday", inches: 1, mins: 15 },
                             { day: "Friday", inches: 0, mins: 0, note: "No Irrigation" },
                             { day: "Saturday", inches: 2, mins: 60, hr: 1 },
                         ].map((d, i) => (
-                            <div key={i} className="flex flex-col border-l items-center space-y-1">
+                            <div key={i} className="flex flex-col w-auto border-l items-center space-1">
                                 {/* Day Name (Top Row) */}
-                                <p className="font-semibold border-b text-lg">{d.day}</p>
+                                <p className="font-semibold border-b  text-xs md:text-lg">{d.day}</p>
 
                                 {/* Box with Data (Bottom Row) */}
                                 <div className="bg-white p-1 w-full text-sm space-y-[2px]">
@@ -166,8 +180,8 @@ const Dashboard = () => {
                                         </>
                                     ) : (
                                         <div className="bg-white p-1 flex items-center justify-center w-full space-y-[2px]">
-                                            <TbDropletOff className=" text-[1rem]" />
-                                            <p className="text-red-500 flex justify-center items-center text-[16px]">{d.note}</p>
+                                            <TbDropletOff className=" md:text-[1rem]" />
+                                            <p className="text-red-500 flex justify-center items-center text-[9px] md:text-[16px]">{d.note}</p>
                                         </div>
                                     )}
                                 </div>
@@ -183,12 +197,12 @@ const Dashboard = () => {
                             { day: "Sunday", inches: 3, mins: 60, hr: 1 },
                             { day: "Monday", inches: 2, mins: 45 },
                             { day: "Tuesday", inches: 2, mins: 45 },
-                            { day: "Wednesday", inches: 2, mins: 30 },
+                            { day: "Wed-day", inches: 2, mins: 30 },
                             { day: "Thursday", inches: 1, mins: 15 },
                             { day: "Friday", inches: 0, mins: 0, note: "No Irrigation" },
                             { day: "Saturday", inches: 2, mins: 60, hr: 1 },
                         ].map((d, i) => (
-                            <p className="font-semibold border text-lg">{d.day}</p>))}
+                            <p className="font-semibold border md:text-lg">{d.day}</p>))}
                         {Array.from({ length: 30 }, (_, i) => {
                             const dayNumber = i + 1;
                             // Example data generator — customize this logic as needed
@@ -218,8 +232,8 @@ const Dashboard = () => {
                                             </div>
                                         ) : (
                                             <div className="bg-white p-1 flex h-32 items-center justify-center w-full space-y-[2px]">
-                                                <TbDropletOff className="text-[1rem]" />
-                                                <p className="text-red-500 text-[16px]">{note}</p>
+                                                <TbDropletOff className="" />
+                                                <p className="text-red-500 text-[9px] md:text-[16px]">{note}</p>
                                             </div>
                                         )}
                                     </div>
