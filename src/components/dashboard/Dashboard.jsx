@@ -12,21 +12,21 @@ import { IoMdWarning } from "react-icons/io";
 import { FaCloudSun, FaCloudRain, FaSun, FaCloud } from "react-icons/fa";
 import { webState } from "../../App";
 const schedule = [
-  { "week": 1, "description": "Emergence", "inches": 1, "liters": 102790 },
-  { "week": 2, "description": "Seedling", "inches": 1, "liters": 102790 },
-  { "week": 3, "description": "Seedling", "inches": 2, "liters": 205580 },
-  { "week": 4, "description": "Early Veg.", "inches": 2, "liters": 205580 },
-  { "week": 5, "description": "Veg. Growth", "inches": 2, "liters": 205580 },
-  { "week": 6, "description": "Veg. Growth", "inches": 2, "liters": 205580 },
-  { "week": 7, "description": "Square Init.", "inches": 2, "liters": 205580 },
-  { "week": 8, "description": "Squaring", "inches": 2, "liters": 205580 },
-  { "week": 9, "description": "Flowering", "inches": 2, "liters": 205580 },
-  { "week": 10, "description": "Peak Flower", "inches": 2, "liters": 205580 },
-  { "week": 11, "description": "Boll Form.", "inches": 2, "liters": 205580 },
-  { "week": 12, "description": "Boll Dev.", "inches": 2, "liters": 205580 },
-  { "week": 13, "description": "Boll Dev.", "inches": 2, "liters": 205580 },
-  { "week": 14, "description": "Maturity", "inches": 1.25, "liters": 128500 },
-  { "week": 15, "description": "Maturity", "inches": 0.5, "liters": 51500 }
+    { "week": 1, "description": "Emergence", "inches": 1, "liters": 102790 },
+    { "week": 2, "description": "Seedling", "inches": 1, "liters": 102790 },
+    { "week": 3, "description": "Seedling", "inches": 2, "liters": 205580 },
+    { "week": 4, "description": "Early Veg.", "inches": 2, "liters": 205580 },
+    { "week": 5, "description": "Veg. Growth", "inches": 2, "liters": 205580 },
+    { "week": 6, "description": "Veg. Growth", "inches": 2, "liters": 205580 },
+    { "week": 7, "description": "Square Init.", "inches": 2, "liters": 205580 },
+    { "week": 8, "description": "Squaring", "inches": 2, "liters": 205580 },
+    { "week": 9, "description": "Flowering", "inches": 2, "liters": 205580 },
+    { "week": 10, "description": "Peak Flower", "inches": 2, "liters": 205580 },
+    { "week": 11, "description": "Boll Form.", "inches": 2, "liters": 205580 },
+    { "week": 12, "description": "Boll Dev.", "inches": 2, "liters": 205580 },
+    { "week": 13, "description": "Boll Dev.", "inches": 2, "liters": 205580 },
+    { "week": 14, "description": "Maturity", "inches": 1.25, "liters": 128500 },
+    { "week": 15, "description": "Maturity", "inches": 0.5, "liters": 51500 }
 ]
 
 const Dashboard = () => {
@@ -105,14 +105,30 @@ const Dashboard = () => {
         }
         return <FaCloudSun size={30} className="mx-auto" />;
     };
-    const sowingDate = new Date("2025-03-01"); // Example sowing date
+    const sowingDate = field?.sowingDate ? new Date(field.sowingDate) : null;
     const today = new Date();
-    const daysSinceSowing = Math.floor((today - sowingDate) / (1000 * 60 * 60 * 24));
-    const currentWeek = Math.floor(daysSinceSowing / 7) + 1;
-    const currentDay = daysSinceSowing + 1;
 
-    // Get current irrigation data
-    const irrigationData = schedule.find(item => item.week === currentWeek);
+    const [daysSinceSowing, setDaysSinceSowing] = useState(0);
+    const [currentWeek, setCurrentWeek] = useState(0);
+    const [irrigationData, setIrrigationData] = useState(null);
+    useEffect(() => {
+        if (field) {
+            const sowingDate = new Date(field.sowingDate);
+            const today = new Date();
+
+            if (!isNaN(sowingDate)) {
+                const days = Math.floor((today - sowingDate) / (1000 * 60 * 60 * 24));
+                const week = Math.floor(days / 7) + 1;
+
+                setDaysSinceSowing(days);
+                setCurrentWeek(week);
+
+                const matchedData = schedule.find(item => item.week === week);
+                setIrrigationData(matchedData || null);
+                // console.log(field?.sowingDate)
+            }
+        }
+    }, [field]);
     useEffect(() => {
         if (user) {
             console.log(user)
@@ -142,7 +158,7 @@ const Dashboard = () => {
 
             {/* Alerts */}
             <div className="flex justify-between items-center space-x-2">
-                <div className="w-3/4 flex-1 flex border border-gray-500 p-2 items-center space-x-2">
+                <div className="w-3/4 flex-1 flex border border-gray-500 p-3 rounded-md items-center space-x-2">
                     <IoMdWarning size={50} className="text-red-600" />
                     <span className="text-sm font-semibold">{loading ? "Loading advice..." : advice}</span>
                 </div>
@@ -214,7 +230,17 @@ const Dashboard = () => {
                         <div className="flex flex-col justify-around my-8 gap-6">
                             <div className="flex justify-center items-center gap-2 text-sm">
                                 <FaArrowUpFromWaterPump className="text-5xl" />
-                                <span className="font-bold">~{Math.round(irrigationData.liters / 308370)} hour</span> today
+                                <span className="font-bold">
+                                    ~
+                                    {(() => {
+                                        const hours = irrigationData.liters / 308370;
+                                        if (hours < 1) {
+                                            return `${Math.round(hours * 60)} min`;
+                                        }
+                                        return `${Math.round(hours)} hour`;
+                                    })()}
+                                </span>{' '}
+                                today
                             </div>
                             <div className="flex justify-center items-center font-bold text-xl">
                                 <button className="flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-gray-800 mt-1">

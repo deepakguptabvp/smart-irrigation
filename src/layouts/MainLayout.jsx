@@ -13,7 +13,12 @@ const UserLayout = () => {
   
         console.log("User data:", data);
         setUser(data);
-        setField(data?.fields?.[0])
+        setField(data?.fields?.[0]);
+        if (data?.fields?.length) {
+          navigate("/landingpage")
+        } else {
+          navigate("/addfield");
+        }
       } catch (error) {
         console.error("Error fetching user:", error.response?.data || error.message);
       }

@@ -71,7 +71,7 @@ export default function NDMIMapWithStreetView({
           <div style={{ height: "60vh", width: "100%" }}>
             <GoogleMap
               center={{ lat: center[0], lng: center[1] }}
-              zoom={18}
+              zoom={12}
               mapContainerStyle={{ height: "100%", width: "100%" }}
             >
               <StreetViewPanorama
@@ -86,7 +86,7 @@ export default function NDMIMapWithStreetView({
 
       {/* NDMI Legend (Always visible) */}
       {!showStreetView && (
-        <div style={{zIndex:200}} className="absolute top-20 right-2 bg-black/10 p-3 rounded shadow-md text-xs max-w-[200px] overflow-y-auto max-h-[90%]">
+        <div style={{zIndex:200}} className="absolute top-8 right-2 bg-black/10 p-3 rounded shadow-md text-xs max-w-[200px] overflow-y-auto max-h-[90%]">
           <div className="font-semibold mb-1 text-center">NDMI Legend</div>
           <ul>
             {legend?.map(({ label, color }) => (
