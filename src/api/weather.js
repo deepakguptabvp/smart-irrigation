@@ -1,17 +1,8 @@
 import axios from "axios";
 
-export const fetchGoogleWeather = async (lat, lon) => {
-  const apiKey = "AIzaSyDkxwT1OheCGFd0Y4618qX9AIYsopibBRk"; // Replace with your actual key
-  const res = await axios.post(
-    `https://weather.googleapis.com/v1/currentConditions:lookup?key=${apiKey}&location.latitude=29.471397&location.longitude=77.696732`,
-    {
-      location: {
-        latitude: '29.471397',
-        longitude: '77.696732'
-      },
-      units: "METRIC"
-    }
+export const fetchWeather = async (lat, lon) => {
+  const res = await axios.get(
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
   );
-
-  return res.data;
+  return res.data.current_weather;
 };
