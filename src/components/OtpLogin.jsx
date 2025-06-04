@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import axios from "axios";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import UserAxiosAPI from "../api/userAxiosAPI";
+import { webState } from "../App";
 
-export default function OtpLogin({ user, setUser }) {
+export default function OtpLogin({ }) {
   const [phone, setPhone] = useState("");
+  const {user, setUser, setField} = useContext(webState);
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [sdkLoaded, setSdkLoaded] = useState(false);

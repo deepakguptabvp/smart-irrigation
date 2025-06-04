@@ -36,6 +36,7 @@ const Dashboard = () => {
     const [weather, setWeather] = useState(null);
     const [ndmiImage, setNdmiImage] = useState("");
     const [loading, setLoading] = useState(true);
+    const [dominantWeather, setDominantWeather] = useState("");
     const [ndmi, setNdmi] = useState("");
 
     const getAdvice = (code, temp) => {
@@ -74,7 +75,7 @@ const Dashboard = () => {
             console.log(user);
             const geometry = field?.coordinates;
 
-            const ndmi = await fetchNDMI(geometry);
+            const ndmi = await fetchNDMI(geometry,field?.sowingDate);
             setNdmiImage(ndmi.image_base64);
             setNdmi(ndmi);
             const waether = await fetchWeather(field?.coordinates?.[0]?.[0]?.[1], field?.coordinates?.[0]?.[0]?.[0]);
@@ -135,6 +136,31 @@ const Dashboard = () => {
             fetchData();
         }
     }, [user, field]);
+    function getDominantWeatherAndColor(area_summary_ha,legend) {
+        let maxLabel = null;
+        let maxArea = -Infinity;
+
+        for (const [label, area] of Object.entries(area_summary_ha)) {
+            if (area > maxArea) {
+                maxArea = area;
+                maxLabel = label;
+            }
+        }
+
+        const legendEntry = legend.find((l) => l.label === maxLabel);
+
+        return {
+            color: legendEntry ? legendEntry.color : "#000000",
+            weather: maxLabel || "Unknown"
+        };
+    }
+
+    useEffect(() => {
+        if (ndmi) {
+            const wther = getDominantWeatherAndColor(ndmi?.area_summary_ha,ndmi?.legend);
+            setDominantWeather(wther);
+        }
+    }, [ndmi])
     return (
         <div className="md:p-4 space-y-4">
             {/* Header */}
@@ -193,7 +219,7 @@ const Dashboard = () => {
             {/* Label */}
             <div className="text-center text-sm font-semibold">
                 Moisture maps (NDMI){" "}
-                <span className="text-blue-500">stressed moisture</span>
+                <span className={`text-blue-500`}>{dominantWeather.weather}</span>
             </div>
 
             {/* Irrigation Tracker */}
@@ -217,7 +243,7 @@ const Dashboard = () => {
                 {tab === "today" && irrigationData && (
                     <div className="mt-4 text-center flex justify-around space-y-3">
                         <div className="flex flex-col justify-around my-8 gap-6">
-                            <p className="text-xs text-gray-500">Week {currentWeek}, Day {currentDay}</p>
+                            <p className="text-xs text-gray-500">Week {currentWeek}, Day {daysSinceSowing}</p>
                             <div>
                                 <div className="flex justify-center gap-1">
                                     {[...Array(irrigationData)].map((_, i) => (

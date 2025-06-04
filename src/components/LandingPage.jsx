@@ -12,6 +12,7 @@ import { FaCloudRain, FaDroplet, FaPlay } from "react-icons/fa6";
 import { IoMdWarning } from "react-icons/io";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import Dashboard from "./dashboard/Dashboard";
+import LogoutConfirmation from "./Logout";
 
 const LandingPage = ({ user }) => {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -34,8 +35,8 @@ const LandingPage = ({ user }) => {
         return <MapWithDrawing />;
       case "weather-forecast":
         return <WeatherForecast />;
-      case "about-us":
-        return <AboutUs />;
+      case "logout":
+        return <LogoutConfirmation />;
       default:
         return (
           <div className="text-center text-gray-500 mt-10">

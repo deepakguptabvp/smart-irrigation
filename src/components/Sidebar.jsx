@@ -3,38 +3,43 @@ import { TiWeatherPartlySunny } from "react-icons/ti";
 import { PiNotebookFill } from "react-icons/pi";
 import { GrSatellite } from "react-icons/gr";
 import { CgProfile } from "react-icons/cg";
-import { FaMapMarkedAlt } from "react-icons/fa";
+import { FaMapMarkedAlt, FaSignOutAlt } from "react-icons/fa";
 import { HiX } from "react-icons/hi";
 import { useContext } from "react";
 import { webState } from "../App";
 
 const Sidebar = ({
-  
+
   activeSection,
   setActiveSection,
   sidebarOpen,
   setSidebarOpen,
 }) => {
+  // const [showModal, setShowModal] = useState(false);
+
+  // const handleLogout = () => {
+  //   // Perform post-logout logic (redirect, toast, etc.)
+  //   console.log("Logged out");
+  //   setShowModal(false);
+  // };
+  const { user } = useContext(webState)
   const MenuButton = ({ label, icon: Icon, value }) => (
     <button
       onClick={() => {
         setActiveSection(value);
         setSidebarOpen(false); // Close on selection
       }}
-      className={`flex items-center px-4 py-2 rounded-md w-full text-left hover:bg-green-100 ${
-        activeSection === value ? "bg-green-200 font-semibold" : ""
-      }`}
+      className={`flex items-center px-4 py-2 rounded-md w-full text-left hover:bg-green-100 ${activeSection === value ? "bg-green-200 font-semibold" : ""
+        }`}
     >
       <Icon className="mr-2" size={20} />
       {label}
     </button>
   );
-const{user} = useContext(webState)
   return (
     <div
-      className={`${
-        sidebarOpen ? "block" : "hidden"
-      } fixed z-30 h-[100vh] md:static md:block top-0 left-0 md:w-64 w-4/5  bg-white shadow-lg p-3 transition-all duration-300 ease-in-out`}
+      className={`${sidebarOpen ? "block" : "hidden"
+        } fixed z-30 h-[100vh] md:static md:block top-0 left-0 md:w-64 w-4/5  bg-white shadow-lg p-3 transition-all duration-300 ease-in-out`}
     >
       {/* Close Button (Mobile only) */}
       <div className="md:hidden flex justify-end mb-2">
@@ -62,7 +67,8 @@ const{user} = useContext(webState)
       <MenuButton icon={MdSensors} label="Soil Sensors" value="soil-sensors" />
       {/* <MenuButton icon={FaMapMarkedAlt} label="Map Polygon" value="map-polygon" /> */}
       <MenuButton icon={TiWeatherPartlySunny} label="Weather Forecast" value="weather-forecast" />
-      <MenuButton icon={PiNotebookFill} label="About Us" value="about-us" />
+      {/* <MenuButton icon={PiNotebookFill} label="About Us" value="about-us" /> */}
+      <MenuButton icon={FaSignOutAlt} label="Log Out" value="logout" />
     </div>
   );
 };

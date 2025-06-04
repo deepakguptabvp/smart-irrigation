@@ -136,8 +136,7 @@ export default function OTPVerification({ formData, user, setUser }) {
         });
         setUser(res.data.user)
         toast.success("Account Created!");
-        localStorage.setItem("SIUserToken", res.data.token);
-
+        Cookies.set("SIUserToken", data?.token, { expires: 30 });
         navigate("/addfield");
       } else {
         if (response.statusCode === 400) {
@@ -180,11 +179,10 @@ export default function OTPVerification({ formData, user, setUser }) {
         <button
           onClick={sendOtp}
           disabled={resendTimer > 0}
-          className={`w-full py-2 rounded-md text-white ${
-            resendTimer > 0
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          }`}
+          className={`w-full py-2 rounded-md text-white ${resendTimer > 0
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+            }`}
         >
           {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : "Resend OTP"}
         </button>
