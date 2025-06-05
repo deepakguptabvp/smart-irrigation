@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import UserAxiosAPI from "../api/userAxiosAPI";
+import Cookies from "js-cookie";
 
 export default function OTPVerification({ formData, user, setUser }) {
   const navigate = useNavigate();
