@@ -9,8 +9,10 @@ function formatAndIncrementDate(dateString) {
 }
 
 export const fetchNDMI = async (geometry,sowingDate) => {
-  const res = await axios.post(
-    "https://api.allorigins.win/get?url=https://server.cropgenapp.com/get-vegetation-index",
+  const proxyUrl = "https://corsproxy.io/?";
+  const targetUrl = "https://server.cropgenapp.com/get-vegetation-index";
+
+  const res = await axios.post(proxyUrl + targetUrl,
     {
       start_date: "2025-06-03",
       end_date: formatAndIncrementDate(new Date()),
