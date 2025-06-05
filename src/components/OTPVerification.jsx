@@ -128,17 +128,22 @@ export default function OTPVerification({ formData, user, setUser }) {
       // });
 
       // if (true) {
-        toast.success("OTP Verified!");
-        setError("");
-        // Call signup API with phone number and other formData if needed
-        const res = await axios.post("/user/signup", {
-          ...formData,
-          phone: formData.phone,
-        });
-        setUser(res.data.user)
-        toast.success("Account Created!");
-        Cookies.set("SIUserToken", data?.token, { expires: 30 });
+      toast.success("OTP Verified!");
+      setError("");
+      // Call signup API with phone number and other formData if needed
+      const res = await axios.post("/user/signup", {
+        ...formData,
+        phone: formData.phone,
+      });
+
+      if (res.data?.success) {
+        setUser(res.data.user);
+        toast.success(res.data.message || "Account created!");
+        Cookies.set("SIUserToken", res.data.token, { expires: 30 });
         navigate("/addfield");
+      } else {
+        toast.error(res.data.message || "Signup failed");
+      }
       // } else {
       //   if (response.statusCode === 400) {
       //     setError(response.errorMessage || "Invalid OTP");

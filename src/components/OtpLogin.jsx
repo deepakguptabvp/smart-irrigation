@@ -103,14 +103,19 @@ export default function OtpLogin({ }) {
         phone,
         type: "PHONE",
       });
-      setUser(data?.user)
-      setField(data?.user?.fields?.[0])
-      Cookies.set("SIUserToken", data?.token, { expires: 30 });
-      if (data?.user?.fields?.length) {
-        navigate("/landingpage");
-        window.location.reload();
+      if (data?.success) {
+        toast.success(data?.message || "Login successful");
+        setUser(data?.user);
+        setField(data?.user?.fields?.[0]);
+        Cookies.set("SIUserToken", data?.token, { expires: 30 });
+        if (data?.user?.fields?.length) {
+          navigate("/landingpage");
+          window.location.reload();
+        } else {
+          navigate("/addfield");
+        }
       } else {
-        navigate("/addfield");
+        toast.error(data?.message || "Login failed");
       }
       // } else {
       //   toast.error(response?.errorMessage || "Verification failed");
@@ -159,7 +164,7 @@ export default function OtpLogin({ }) {
             disabled={!phone || loading}
             className="w-full bg-green-600 text-white py-2 rounded-lg font-medium shadow hover:bg-green-700 transition disabled:opacity-50"
           >
-            {!loading?"Continue without OTP":"Please wait..."}
+            {!loading ? "Continue without OTP" : "Please wait..."}
           </button>
         </>
         {/* ) : (
