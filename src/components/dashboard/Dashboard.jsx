@@ -180,7 +180,7 @@ const Dashboard = () => {
                     value={JSON.stringify(field)} // <-- stringify for comparison
                     onChange={(e) => setField(JSON.parse(e.target.value))} // <-- parse to store full object
                 >
-                    <option value="" disabled>
+                    <option value="" >
                         My Field ▼
                     </option>
                     {user?.fields?.map((fieldItem, index) => (

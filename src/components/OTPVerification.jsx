@@ -141,6 +141,7 @@ export default function OTPVerification({ formData, user, setUser }) {
         toast.success(res.data.message || "Account created!");
         Cookies.set("SIUserToken", res.data.token, { expires: 30 });
         navigate("/addfield");
+        window.location.reload();
       } else {
         toast.error(res.data.message || "Signup failed");
       }
