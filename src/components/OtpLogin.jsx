@@ -8,7 +8,7 @@ import { webState } from "../App";
 
 export default function OtpLogin({ }) {
   const [phone, setPhone] = useState("");
-  const {user, setUser, setField} = useContext(webState);
+  const { user, setUser, setField } = useContext(webState);
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [sdkLoaded, setSdkLoaded] = useState(false);
@@ -80,40 +80,41 @@ export default function OtpLogin({ }) {
 
   // Verify OTP
   const handleVerifyOtp = async () => {
-    if (!otp || otp.length < 6) {
-      toast.error("Invalid OTP");
-      return;
-    }
+    // if (!otp || otp.length < 6) {
+    //   toast.error("Invalid OTP");
+    //   return;
+    // }
 
     setLoading(true);
 
     try {
-      const response = await window.OTPlessSignin.verify({
-        channel: "PHONE",
+      // const response = await window.OTPlessSignin.verify({
+      //   channel: "PHONE",
+      //   phone,
+      //   otp,
+      //   countryCode: "+91",
+      // });
+
+      // if (response.success === true) {
+      //   toast.success("OTP Verified");
+
+      // Call your login API
+      const { data } = await axios.post("/user/login", {
         phone,
-        otp,
-        countryCode: "+91",
+        type: "PHONE",
       });
-
-      if (response.success === true) {
-        toast.success("OTP Verified");
-
-        // Call your login API
-        const { data } = await axios.post("/user/login", {
-          phone,
-          type: "PHONE",
-        });
-        setUser(data?.user)
-        setField(data?.user?.fields?.[0])
-        Cookies.set("SIUserToken", data?.token, { expires: 30 });
-        if (data?.user?.fields?.length) {
-          navigate("/landingpage")
-        } else {
-          navigate("/addfield");
-        }
+      setUser(data?.user)
+      setField(data?.user?.fields?.[0])
+      Cookies.set("SIUserToken", data?.token, { expires: 30 });
+      if (data?.user?.fields?.length) {
+        navigate("/landingpage");
+        window.location.reload();
       } else {
-        toast.error(response?.errorMessage || "Verification failed");
+        navigate("/addfield");
       }
+      // } else {
+      //   toast.error(response?.errorMessage || "Verification failed");
+      // }
     } catch (e) {
       console.error(e);
       toast.error("Something went wrong");
@@ -142,26 +143,26 @@ export default function OtpLogin({ }) {
         {/* Title */}
         <h2 className="text-lg font-semibold text-green-800">Login via OTP</h2>
 
-        {!otpSent ? (
-          <>
-            <input
-              type="tel"
-              maxLength={10}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="📱 Enter Phone Number"
-              className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
-            />
+        {/* {!otpSent ? ( */}
+        <>
+          <input
+            type="tel"
+            maxLength={10}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="📱 Enter Phone Number"
+            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
+          />
 
-            <button
-              onClick={handleSendOtp}
-              disabled={!phone}
-              className="w-full bg-green-600 text-white py-2 rounded-lg font-medium shadow hover:bg-green-700 transition disabled:opacity-50"
-            >
-              Send OTP
-            </button>
-          </>
-        ) : (
+          <button
+            onClick={handleVerifyOtp}
+            disabled={!phone}
+            className="w-full bg-green-600 text-white py-2 rounded-lg font-medium shadow hover:bg-green-700 transition disabled:opacity-50"
+          >
+            Continue without OTP
+          </button>
+        </>
+        {/* ) : (
           <>
             <input
               type="text"
@@ -180,7 +181,7 @@ export default function OtpLogin({ }) {
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </>
-        )}
+        )} */}
       </div>
     </div>
   );

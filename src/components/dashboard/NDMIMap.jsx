@@ -18,20 +18,28 @@ export default function NDMIMapWithStreetView({
   const latLngs = coordinates.map(([lon, lat]) => [lat, lon]);
   const center = latLngs[0];
 
-  function getDominantColor() {
-    let maxLabel = null;
-    let maxArea = -Infinity;
-    for (const [label, area] of Object.entries(area_summary_ha)) {
-      if (area > maxArea) {
-        maxArea = area;
-        maxLabel = label;
-      }
+  
+  function getDominantWeatherAndColor() {
+  let maxLabel = null;
+  let maxArea = -Infinity;
+
+  for (const [label, area] of Object.entries(area_summary_ha)) {
+    if (area > maxArea) {
+      maxArea = area;
+      maxLabel = label;
     }
-    const legendEntry = legend.find((l) => l.label === maxLabel);
-    return legendEntry ? legendEntry.color : "#000000";
   }
 
-  const dominantColor = getDominantColor();
+  const legendEntry = legend.find((l) => l.label === maxLabel);
+
+  return {
+    color: legendEntry ? legendEntry.color : "#000000",
+    weather: maxLabel || "Unknown"
+  };
+}
+
+
+  const dominantColor = getDominantWeatherAndColor().color;
 
   return (
     <div className="relative h-full max-h-[60vh] w-full rounded overflow-hidden mb-4">

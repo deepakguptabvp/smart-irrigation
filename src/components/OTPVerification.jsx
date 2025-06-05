@@ -113,21 +113,21 @@ export default function OTPVerification({ formData, user, setUser }) {
 
   // Verify OTP via OTPless, then call signup API
   const verifyAndCreateAccount = async () => {
-    if (otp.length !== 6) {
-      setError("Please enter a 6-digit OTP");
-      return;
-    }
+    // if (otp.length !== 6) {
+    //   setError("Please enter a 6-digit OTP");
+    //   return;
+    // }
     setLoading(true);
     setError("");
     try {
-      const response = await window.OTPlessSignin.verify({
-        channel: "PHONE",
-        phone: formData.phone,
-        otp,
-        countryCode: "+91",
-      });
+      // const response = await window.OTPlessSignin.verify({
+      //   channel: "PHONE",
+      //   phone: formData.phone,
+      //   otp,
+      //   countryCode: "+91",
+      // });
 
-      if (response.success === true) {
+      // if (true) {
         toast.success("OTP Verified!");
         setError("");
         // Call signup API with phone number and other formData if needed
@@ -139,13 +139,13 @@ export default function OTPVerification({ formData, user, setUser }) {
         toast.success("Account Created!");
         Cookies.set("SIUserToken", data?.token, { expires: 30 });
         navigate("/addfield");
-      } else {
-        if (response.statusCode === 400) {
-          setError(response.errorMessage || "Invalid OTP");
-        } else {
-          setError("OTP verification failed, please try again.");
-        }
-      }
+      // } else {
+      //   if (response.statusCode === 400) {
+      //     setError(response.errorMessage || "Invalid OTP");
+      //   } else {
+      //     setError("OTP verification failed, please try again.");
+      //   }
+      // }
     } catch (err) {
       setError("Verification failed. Please try again.");
       console.error(err);
