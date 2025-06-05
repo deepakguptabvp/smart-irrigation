@@ -104,12 +104,12 @@ export default function OTPVerification({ formData, user, setUser }) {
   };
 
   // Automatically send OTP on component mount
-  useEffect(() => {
-    if (sdkLoaded && formData?.phone) {
-      sendOtp();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sdkLoaded, formData?.phone]);
+  // useEffect(() => {
+  //   if (sdkLoaded && formData?.phone) {
+  //     sendOtp();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [sdkLoaded, formData?.phone]);
 
   // Verify OTP via OTPless, then call signup API
   const verifyAndCreateAccount = async () => {
@@ -164,7 +164,7 @@ export default function OTPVerification({ formData, user, setUser }) {
       <div className="p-6 rounded shadow-xl w-full max-w-sm space-y-4">
         <h2 className="text-xl font-bold text-center">Verify Your Number</h2>
         <p className="text-sm text-center text-gray-500">
-          Enter the 6-digit OTP sent to {formData.phone}
+          Enter any 6-digit number
         </p>
 
         <input
@@ -182,7 +182,7 @@ export default function OTPVerification({ formData, user, setUser }) {
           className="w-full px-4 py-2 border rounded-md text-center text-lg tracking-widest"
         />
 
-        <button
+        {/* <button
           onClick={sendOtp}
           disabled={resendTimer > 0}
           className={`w-full py-2 rounded-md text-white ${resendTimer > 0
@@ -191,7 +191,7 @@ export default function OTPVerification({ formData, user, setUser }) {
             }`}
         >
           {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : "Resend OTP"}
-        </button>
+        </button> */}
 
         <button
           onClick={verifyAndCreateAccount}
