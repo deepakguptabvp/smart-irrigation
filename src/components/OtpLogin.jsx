@@ -156,10 +156,10 @@ export default function OtpLogin({ }) {
 
           <button
             onClick={handleVerifyOtp}
-            disabled={!phone}
+            disabled={!phone || loading}
             className="w-full bg-green-600 text-white py-2 rounded-lg font-medium shadow hover:bg-green-700 transition disabled:opacity-50"
           >
-            Continue without OTP
+            {!loading?"Continue without OTP":"Please wait..."}
           </button>
         </>
         {/* ) : (
