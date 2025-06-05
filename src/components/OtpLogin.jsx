@@ -106,7 +106,7 @@ export default function OtpLogin({ }) {
       if (data?.success) {
         toast.success(data?.message || "Login successful");
         setUser(data?.user);
-        setField(data?.user?.fields?.[0]);
+        // setField(data?.user?.fields?.[0]);
         Cookies.set("SIUserToken", data?.token, { expires: 30 });
         if (data?.user?.fields?.length) {
           navigate("/landingpage");
