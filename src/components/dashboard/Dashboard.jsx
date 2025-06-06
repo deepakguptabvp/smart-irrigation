@@ -11,6 +11,7 @@ import NDMIMap from "./NDMIMap";
 import { IoMdWarning } from "react-icons/io";
 import { FaCloudSun, FaCloudRain, FaSun, FaCloud } from "react-icons/fa";
 import { webState } from "../../App";
+import IrrigationTabs from "./IrrigationTabs";
 const schedule = [
     { "week": 1, "description": "Emergence", "inches": 1, "liters": 102790 },
     { "week": 2, "description": "Seedling", "inches": 1, "liters": 102790 },
@@ -199,7 +200,7 @@ const Dashboard = () => {
             </div> :
                 !valid ? <div className="flex justify-between items-center h-full space-x-2">
                     <div className="w-3/4 flex-1 flex border border-gray-500 p-3 rounded-md items-center space-x-2">
-                        Selected Field date is in future
+                        Selected Field sowing date is in future
                     </div>
                 </div> : <>
 
@@ -218,7 +219,7 @@ const Dashboard = () => {
                         </div>
                     </div>}
 
-                    {ndmi ? <NDMIMap coordinates={user?.fields[0]?.coordinates?.[0]} legend={ndmi?.legend} area_summary_ha={ndmi?.area_summary_ha} ndmiBase64={ndmiImage} ndmiBounds={user?.fields[0]?.coordinates} /> : <div className="flex justify-center my-6">Please Wait...</div>}
+                    {ndmi ? <NDMIMap coordinates={field?.coordinates?.[0]} legend={ndmi?.legend} area_summary_ha={ndmi?.area_summary_ha} ndmiBase64={ndmiImage} ndmiBounds={field?.coordinates} /> : <div className="flex justify-center my-6">Please Wait...</div>}
                     {/* <MoistureMapWithLegend img={ndmiImage} /> */}
                     {/* Satellite Image */}
                     {/* 78.6800480473868, 20.47719919671666,78.68043249745475, 20.477961387625218,78.68120139693579, 20.477777121886653,78.68094211716758, 20.47688091778385 */}
@@ -264,7 +265,7 @@ const Dashboard = () => {
 
                         {/* Tracker Content */}
                         {/* Tracker Content */}
-                        {tab === "today" && irrigationData && (
+                        {/* {tab === "today" && irrigationData && (
                             <div className="mt-4 text-center flex justify-around space-y-3">
                                 <div className="flex flex-col justify-around my-8 gap-6">
                                     <p className="text-xs text-gray-500">Week {currentWeek}, Day {daysSinceSowing}</p>
@@ -300,8 +301,8 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             </div>
-                        )}
-
+                        )} */}
+                        {/* 
                         {tab === "weekly" && (
                             <div className="grid grid-cols-7 gap-[6px] text-[10px] mt-4 text-center">
                                 {[
@@ -314,10 +315,7 @@ const Dashboard = () => {
                                     { day: "Saturday", inches: 2, mins: 60, hr: 1 },
                                 ].map((d, i) => (
                                     <div key={i} className="flex flex-col w-auto border-l items-center space-1">
-                                        {/* Day Name (Top Row) */}
                                         <p className="font-semibold border-b  text-xs md:text-lg">{d.day}</p>
-
-                                        {/* Box with Data (Bottom Row) */}
                                         <div className="bg-white p-1 w-full text-sm space-y-[2px]">
                                             {d.inches > 0 ? (
                                                 <>
@@ -342,13 +340,13 @@ const Dashboard = () => {
                                     </div>
                                 ))}
                             </div>
-                        )}
+                        )} */}
 
-
-                        {tab === "monthly" && (
+                        {field && <IrrigationTabs sowingDate={field?.sowingDate} tab={tab} />}
+                        {/* {tab === "monthly" && (
                             <div className="grid grid-cols-7 gap-[6px] text-[10px] mt-4 text-center">
                                 {[
-                                    { day: "Sunday", inches: 3, mins: 60, hr: 1 },
+                                    { day: "Day 1", inches: 3, mins: 60, hr: 1 },
                                     { day: "Monday", inches: 2, mins: 45 },
                                     { day: "Tuesday", inches: 2, mins: 45 },
                                     { day: "Wed-day", inches: 2, mins: 30 },
@@ -356,20 +354,16 @@ const Dashboard = () => {
                                     { day: "Friday", inches: 0, mins: 0, note: "No Irrigation" },
                                     { day: "Saturday", inches: 2, mins: 60, hr: 1 },
                                 ].map((d, i) => (
-                                    <p className="font-semibold border md:text-lg">{d.day}</p>))}
+                                    <p className="font-semibold border md:text-lg">Day-{i+1}</p>))}
                                 {Array.from({ length: 30 }, (_, i) => {
                                     const dayNumber = i + 1;
-                                    // Example data generator — customize this logic as needed
                                     const inches = dayNumber % 5 === 0 ? 0 : Math.floor(Math.random() * 3) + 1;
                                     const mins = inches > 0 ? inches * 15 : 0;
                                     const note = inches === 0 ? "No Irrigation" : null;
 
                                     return (
                                         <div key={i} className="flex flex-col justify-center border-l items-center space-y-1">
-                                            {/* Day Number */}
-                                            {/* <p className="font-semibold border text-lg">Day {dayNumber}</p> */}
-
-                                            {/* Box with Data */}
+                                            <p className="font-semibold border text-lg">Day {dayNumber}</p>
                                             <div className="bg-white p-1 w-full border text-sm space-y-[2px]">
                                                 {inches > 0 ? (
                                                     <div className="h-32 flex flex-col justify-center">
@@ -395,7 +389,7 @@ const Dashboard = () => {
                                     );
                                 })}
                             </div>
-                        )}
+                        )} */}
 
 
                     </div>

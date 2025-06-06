@@ -62,7 +62,7 @@ export default function AddField({}) {
             ><MapWithDrawing setCoordinates={setCoordinates}/></div>
 
             {/* Crop Details */}
-            <div className="mb-4 mt-24">
+            <div className="mb-4 mt-32">
               <h2 className="text-sm font-semibold text-gray-600 mb-2">Crop Details</h2>
               <div className="flex space-x-2">
                 <select
