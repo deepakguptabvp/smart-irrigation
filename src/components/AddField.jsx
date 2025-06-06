@@ -38,7 +38,8 @@ export default function AddField({}) {
       });
     }
     toast.success("Fields added successfully!");
-    navigate('/landingpage')
+    navigate('/landingpage');
+    window.location.reload();
   };
 
   return (

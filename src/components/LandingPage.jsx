@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import PumpCalculator from "./PumpCalculator";
 import SatelliteData from "./SatelliteData";
@@ -45,7 +45,6 @@ const LandingPage = ({ user }) => {
         );
     }
   };
-
   return (
     <div className="flex min-h-screen bg-white">
       {/* Sidebar */}
