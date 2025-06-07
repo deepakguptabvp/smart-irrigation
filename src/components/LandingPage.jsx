@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import PumpCalculator from "./PumpCalculator";
 import SatelliteData from "./SatelliteData";
@@ -11,16 +11,20 @@ import Sidebar from "./Sidebar";
 import { FaCloudRain, FaDroplet, FaPlay } from "react-icons/fa6";
 import { IoMdWarning } from "react-icons/io";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import Dashboard from "./dashboard/Dashboard";
+import LogoutConfirmation from "./Logout";
 
 const LandingPage = ({ user }) => {
-  const [activeSection, setActiveSection] = useState("");
+  const [activeSection, setActiveSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tab, setTab] = useState("today");
 
   const renderContent = () => {
     switch (activeSection) {
+      case "dashboard":
+        return <Dashboard />;
       case "addfield":
-        return <AddField />;
+        return <AddField use={user} />;
       case "pump-calculator":
         return <PumpCalculator />;
       case "satellite-data":
@@ -31,8 +35,8 @@ const LandingPage = ({ user }) => {
         return <MapWithDrawing />;
       case "weather-forecast":
         return <WeatherForecast />;
-      case "about-us":
-        return <AboutUs />;
+      case "logout":
+        return <LogoutConfirmation />;
       default:
         return (
           <div className="text-center text-gray-500 mt-10">
@@ -41,7 +45,6 @@ const LandingPage = ({ user }) => {
         );
     }
   };
-
   return (
     <div className="flex min-h-screen bg-white">
       {/* Sidebar */}

@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import axios from "axios";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import UserAxiosAPI from "../api/userAxiosAPI";
+import { webState } from "../App";
 
-export default function OtpLogin({user, setUser}) {
+export default function OtpLogin({ }) {
   const [phone, setPhone] = useState("");
+  const { user, setUser, setField } = useContext(webState);
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [sdkLoaded, setSdkLoaded] = useState(false);
@@ -78,33 +80,45 @@ export default function OtpLogin({user, setUser}) {
 
   // Verify OTP
   const handleVerifyOtp = async () => {
-    if (!otp || otp.length < 6) {
-      toast.error("Invalid OTP");
-      return;
-    }
+    // if (!otp || otp.length < 6) {
+    //   toast.error("Invalid OTP");
+    //   return;
+    // }
+
     setLoading(true);
     try {
-      const response = await window.OTPlessSignin.verify({
-        channel: "PHONE",
+      // const response = await window.OTPlessSignin.verify({
+      //   channel: "PHONE",
+      //   phone,
+      //   otp,
+      //   countryCode: "+91",
+      // });
+
+      // if (response.success === true) {
+      //   toast.success("OTP Verified");
+
+      // Call your login API
+      const { data } = await axios.post("/user/login", {
         phone,
-        otp,
-        countryCode: "+91",
+        type: "PHONE",
       });
-
-      if (response.success === true) {
-        toast.success("OTP Verified");
-
-        // Call your login API
-        const { data } = await axios.post("/user/login", {
-          phone,
-          type: "PHONE",
-        });
-        setUser(data?.user)
+      if (data?.success) {
+        toast.success(data?.message || "Login successful");
+        setUser(data?.user);
+        // setField(data?.user?.fields?.[0]);
         Cookies.set("SIUserToken", data?.token, { expires: 30 });
-        navigate("/landingpage");
+        if (data?.user?.fields?.length) {
+          navigate("/landingpage");
+          window.location.reload();
+        } else {
+          navigate("/addfield");
+        }
       } else {
-        toast.error(response?.errorMessage || "Verification failed");
+        toast.error(data?.message || "Login failed");
       }
+      // } else {
+      //   toast.error(response?.errorMessage || "Verification failed");
+      // }
     } catch (e) {
       console.error(e);
       toast.error("Something went wrong");
@@ -133,26 +147,26 @@ export default function OtpLogin({user, setUser}) {
         {/* Title */}
         <h2 className="text-lg font-semibold text-green-800">Login via OTP</h2>
 
-        {!otpSent ? (
-          <>
-            <input
-              type="tel"
-              maxLength={10}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="📱 Enter Phone Number"
-              className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
-            />
+        {/* {!otpSent ? ( */}
+        <>
+          <input
+            type="tel"
+            maxLength={10}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="📱 Enter Phone Number"
+            className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
+          />
 
-            <button
-              onClick={handleSendOtp}
-              disabled={!phone}
-              className="w-full bg-green-600 text-white py-2 rounded-lg font-medium shadow hover:bg-green-700 transition disabled:opacity-50"
-            >
-              Send OTP
-            </button>
-          </>
-        ) : (
+          <button
+            onClick={handleVerifyOtp}
+            disabled={!phone || loading}
+            className="w-full bg-green-600 text-white py-2 rounded-lg font-medium shadow hover:bg-green-700 transition disabled:opacity-50"
+          >
+            {!loading ? "Continue without OTP" : "Please wait..."}
+          </button>
+        </>
+        {/* ) : (
           <>
             <input
               type="text"
@@ -171,7 +185,7 @@ export default function OtpLogin({user, setUser}) {
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </>
-        )}
+        )} */}
       </div>
     </div>
   );

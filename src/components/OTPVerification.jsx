@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import UserAxiosAPI from "../api/userAxiosAPI";
+import Cookies from "js-cookie";
 
 export default function OTPVerification({ formData, user, setUser }) {
   const navigate = useNavigate();
@@ -103,48 +104,54 @@ export default function OTPVerification({ formData, user, setUser }) {
   };
 
   // Automatically send OTP on component mount
-  useEffect(() => {
-    if (sdkLoaded && formData?.phone) {
-      sendOtp();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sdkLoaded, formData?.phone]);
+  // useEffect(() => {
+  //   if (sdkLoaded && formData?.phone) {
+  //     sendOtp();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [sdkLoaded, formData?.phone]);
 
   // Verify OTP via OTPless, then call signup API
   const verifyAndCreateAccount = async () => {
-    if (otp.length !== 6) {
-      setError("Please enter a 6-digit OTP");
-      return;
-    }
+    // if (otp.length !== 6) {
+    //   setError("Please enter a 6-digit OTP");
+    //   return;
+    // }
     setLoading(true);
     setError("");
     try {
-      const response = await window.OTPlessSignin.verify({
-        channel: "PHONE",
+      // const response = await window.OTPlessSignin.verify({
+      //   channel: "PHONE",
+      //   phone: formData.phone,
+      //   otp,
+      //   countryCode: "+91",
+      // });
+
+      // if (true) {
+      toast.success("OTP Verified!");
+      setError("");
+      // Call signup API with phone number and other formData if needed
+      const res = await axios.post("/user/signup", {
+        ...formData,
         phone: formData.phone,
-        otp,
-        countryCode: "+91",
       });
 
-      if (response.success === true) {
-        toast.success("OTP Verified!");
-        setError("");
-        // Call signup API with phone number and other formData if needed
-        const res = await axios.post("/user/signup", {
-          ...formData,
-          phone: formData.phone,
-        });
-        setUser(res.data.user)
-        toast.success("Account Created!");
-        localStorage.setItem("SIUserToken", res.data.token);
-        navigate("/landingpage");
+      if (res.data?.success) {
+        setUser(res.data.user);
+        toast.success(res.data.message || "Account created!");
+        Cookies.set("SIUserToken", res.data.token, { expires: 30 });
+        navigate("/addfield");
+        window.location.reload();
       } else {
-        if (response.statusCode === 400) {
-          setError(response.errorMessage || "Invalid OTP");
-        } else {
-          setError("OTP verification failed, please try again.");
-        }
+        toast.error(res.data.message || "Signup failed");
       }
+      // } else {
+      //   if (response.statusCode === 400) {
+      //     setError(response.errorMessage || "Invalid OTP");
+      //   } else {
+      //     setError("OTP verification failed, please try again.");
+      //   }
+      // }
     } catch (err) {
       setError("Verification failed. Please try again.");
       console.error(err);
@@ -158,7 +165,7 @@ export default function OTPVerification({ formData, user, setUser }) {
       <div className="p-6 rounded shadow-xl w-full max-w-sm space-y-4">
         <h2 className="text-xl font-bold text-center">Verify Your Number</h2>
         <p className="text-sm text-center text-gray-500">
-          Enter the 6-digit OTP sent to {formData.phone}
+          Enter any 6-digit number
         </p>
 
         <input
@@ -176,17 +183,16 @@ export default function OTPVerification({ formData, user, setUser }) {
           className="w-full px-4 py-2 border rounded-md text-center text-lg tracking-widest"
         />
 
-        <button
+        {/* <button
           onClick={sendOtp}
           disabled={resendTimer > 0}
-          className={`w-full py-2 rounded-md text-white ${
-            resendTimer > 0
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          }`}
+          className={`w-full py-2 rounded-md text-white ${resendTimer > 0
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+            }`}
         >
           {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : "Resend OTP"}
-        </button>
+        </button> */}
 
         <button
           onClick={verifyAndCreateAccount}

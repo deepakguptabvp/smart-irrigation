@@ -6,12 +6,12 @@ import {
     Autocomplete,
     Marker,
 } from "@react-google-maps/api";
-import axios from "axios";
-import { FaMapMarkerAlt, FaSearchLocation, FaDownload } from "react-icons/fa";
+import { FaSearchLocation } from "react-icons/fa";
+import { TbArrowBackUp } from "react-icons/tb";
 
 const containerStyle = {
     width: "100%",
-    height: "85vh",
+    height: "35vh",
 };
 
 const defaultCenter = {
@@ -19,10 +19,9 @@ const defaultCenter = {
     lng: 78.9629,
 };
 
-const MapWithDrawing = () => {
+const MapWithDrawing = ({ setCoordinates }) => {
     const [center, setCenter] = useState(defaultCenter);
-    const [polygonPath, setPolygonPath] = useState([]);
-    const [kmlData, setKmlData] = useState("");
+    const [polygons, setPolygons] = useState([]);
     const [searchInput, setSearchInput] = useState("");
     const [selectedLocation, setSelectedLocation] = useState(null);
 
@@ -37,38 +36,36 @@ const MapWithDrawing = () => {
                 lat: latLng.lat(),
                 lng: latLng.lng(),
             }));
-        setPolygonPath(path);
+
+        setPolygons((prev) => [...prev, polygon]);
+
+        const formattedCoordinates = [path.map((coord) => [coord.lng, coord.lat])];
+        setCoordinates(formattedCoordinates);
     };
 
-    const convertToKML = async () => {
-        try {
-            const response = await axios.post(
-                "https://map-backend-nine.vercel.app/api/convert-to-kml",
-                {
-                    coordinates: polygonPath,
-                }
-            );
+    const convertToKML = () => {
+        if (polygons.length > 0) {
+            const polygon = polygons[polygons.length - 1];
+            const path = polygon
+                .getPath()
+                .getArray()
+                .map((latLng) => ({
+                    lat: latLng.lat(),
+                    lng: latLng.lng(),
+                }));
 
-            const kmlContent = response.data.kml;
-            setKmlData(kmlContent);
-
-            // Create a Blob from the KML content
-            const blob = new Blob([kmlContent], { type: "application/vnd.google-earth.kml+xml" });
-
-            // Create a temporary anchor element for download
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "polygon.kml";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url); // Cleanup
-        } catch (error) {
-            console.error("Error converting to KML", error);
+            const formattedCoordinates = [path.map((coord) => [coord.lng, coord.lat])];
+            setCoordinates(formattedCoordinates);
         }
     };
 
+    const handleUndo = () => {
+        const lastPolygon = polygons[polygons.length - 1];
+        if (lastPolygon) {
+            lastPolygon.setMap(null); // remove from map
+            setPolygons((prev) => prev.slice(0, -1)); // remove from state
+        }
+    };
 
     const onPlaceChanged = () => {
         if (autocompleteRef.current) {
@@ -99,75 +96,89 @@ const MapWithDrawing = () => {
             alert("Invalid latitude and longitude format.");
         }
     };
+    const handleDrawingStart = () => {
+        if (mapRef.current) {
+            mapRef.current.setOptions({ gestureHandling: "none" }); // stop map movement
+        }
+    };
 
+    const handleDrawingEnd = () => {
+        if (mapRef.current) {
+            mapRef.current.setOptions({ gestureHandling: "greedy" }); // allow interaction again
+        }
+    };
     return (
-        <div className="w-full">
-            <LoadScript
-                googleMapsApiKey="AIzaSyDkxwT1OheCGFd0Y4618qX9AIYsopibBRk"
-                libraries={["places", "drawing"]}
-            >
-                {/* Navbar Filters */}
-                <div className="bg-white shadow-md px-6 py-4 flex flex-wrap items-center gap-4 justify-between">
-                    {/* Search by place */}
-                    <div className="flex items-center gap-2 flex-1 min-w-[220px]">
-                        <FaSearchLocation className="text-blue-600" />
-                        <Autocomplete
-                            onLoad={(ref) => (autocompleteRef.current = ref)}
-                            onPlaceChanged={onPlaceChanged}
-                        >
-                            <input
-                                type="text"
-                                placeholder="Search location"
-                                className="p-2 w-full border border-gray-300 rounded-md focus:ring focus:ring-blue-400"
-                            />
-                        </Autocomplete>
-                    </div>
-
-                    {/* Lat, Lng search */}
-                    <form
-                        onSubmit={handleLatLngSubmit}
-                        className="flex items-center gap-2"
+        <div className="w-full max-h-60 h-auto">
+            {/* Navbar Filters */}
+            <div className="bg-white shadow-md px-3 py-4 flex items-center gap-1.5 md:gap-2.5 justify-between">
+                {/* Search by place */}
+                <div className="flex items-center relative flex-1 min-w-[220px]">
+                    <Autocomplete
+                        onLoad={(ref) => (autocompleteRef.current = ref)}
+                        onPlaceChanged={onPlaceChanged}
                     >
-                        <FaMapMarkerAlt className="text-green-600" />
                         <input
                             type="text"
-                            placeholder="Lat,Lng (e.g. 28.61,77.23)"
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            className="p-2 w-48 border border-gray-300 rounded-md focus:ring focus:ring-green-400"
+                            placeholder="Search location"
+                            className="p-2 pr-10 w-full border border-gray-300 rounded-md focus:ring focus:ring-blue-400"
                         />
-                        <button
-                            type="submit"
-                            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-                        >
-                            Go
-                        </button>
-                    </form>
-
-                    {/* KML Button */}
-                    <button
-                        onClick={convertToKML}
-                        disabled={polygonPath.length === 0}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium shadow transition ${polygonPath.length === 0
-                                ? "bg-gray-400 text-white cursor-not-allowed"
-                                : "bg-blue-600 text-white hover:bg-blue-700"
-                            }`}
-                    >
-                        <FaDownload />
-                        Export KML
-                    </button>
+                    </Autocomplete>
+                    {/* <FaSearchLocation className="text-blue-600 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" /> */}
                 </div>
 
-                {/* Map */}
+
+                {/* Save Button */}
+                <button
+                    onClick={convertToKML}
+                    disabled={polygons.length === 0}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium shadow transition ${polygons.length === 0
+                        ? "bg-gray-400 text-white cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                        }`}
+                >
+                    Save
+                </button>
+
+                {/* Undo Button */}
+                <button
+                    onClick={handleUndo}
+                    disabled={polygons.length === 0}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium shadow transition ${polygons.length === 0
+                        ? "bg-gray-100 text-white cursor-not-allowed"
+                        : "bg-red-600 text-white hover:bg-red-700"
+                        }`}
+                >
+                    <TbArrowBackUp className="text-lg text-black" />
+                </button>
+
+            </div>
+
+            {/* Map */}
+            <div className="max-h-[40vh]">
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={center}
-                    zoom={50}
-                    onLoad={(map) => (mapRef.current = map)}
+                    zoom={12}
+                    mapTypeId="hybrid"
+                    onLoad={(map) => {
+                        mapRef.current = map;
+                        map.setMapTypeId("hybrid"); // 👈 Enforces satellite mode again
+                    }}
+                    options={{ // Hide the map/satellite toggle
+                        streetViewControl: false,  // 👈 disables all gestures (including 2-finger move)
+                        draggable: true,
+                        mapTypeControl: false,
+                        draggable: true,                // 👈 Required for DrawingManager to work
+                        scrollwheel: false,
+                    }}
                 >
                     {selectedLocation && <Marker position={selectedLocation} />}
                     <DrawingManager
-                        onPolygonComplete={handlePolygonComplete}
+                        onPolygonComplete={(polygon) => {
+                            handlePolygonComplete(polygon);
+                            handleDrawingEnd(); // gestureHandling back to normal
+                        }}
+                        onOverlayComplete={() => handleDrawingStart()} // disable map drag when starting
                         options={{
                             drawingControl: true,
                             drawingControlOptions: {
@@ -177,27 +188,18 @@ const MapWithDrawing = () => {
                                 fillColor: "#00FF00",
                                 fillOpacity: 0.2,
                                 strokeWeight: 2,
+                                strokeColor: "#FF0000",
                                 clickable: false,
-                                editable: false,
+                                editable: true,
+                                draggable: true,
                                 zIndex: 1,
                             },
                         }}
                     />
-                </GoogleMap>
-            </LoadScript>
 
-            {/* KML Output */}
-            {kmlData && (
-                <div className="p-6 bg-gray-100 border-t border-gray-300">
-                    <h3 className="text-lg font-semibold mb-2 text-gray-700">KML Output:</h3>
-                    <textarea
-                        value={kmlData}
-                        readOnly
-                        rows={10}
-                        className="w-full p-4 text-sm font-mono bg-white border border-gray-300 rounded shadow resize-none"
-                    />
-                </div>
-            )}
+                </GoogleMap>
+            </div>
+
         </div>
     );
 };
