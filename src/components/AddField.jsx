@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { webState } from "../App";
 import MapWithDrawing from "./Maps";
 
-export default function AddField({}) {
+export default function AddField({ }) {
   const { user } = useContext(webState);
   const axios = UserAxiosAPI();
   const navigate = useNavigate();
@@ -27,13 +27,13 @@ export default function AddField({}) {
 
   const handleSubmit = async () => {
     // const userId = ; // replace with actual userId
-    if(!coordinates){
+    if (!coordinates) {
       toast.error("Draw a polygon of your field!");
       return;
     }
     for (let field of fields) {
       await axios.post("/fields/add-field", {
-        userId:user?._id,coordinates,
+        userId: user?._id, coordinates,
         ...field
       });
     }
@@ -44,7 +44,7 @@ export default function AddField({}) {
 
   return (
     <div className="min-h-screen bg-green-50 flex flex-col justify-center items-center">
-      <div className="w-full h-auto max-w-sm rounded-lg shadow-md p-4">
+      <div className="w-full h-auto max-w-sm rounded-lg shadow-md py-4 p-2 md:p-4">
         {/* ...header/logo as you already have... */}
         <div className="flex items-center space-x-14 mb-4">
           <img
@@ -60,28 +60,36 @@ export default function AddField({}) {
               src="https://st2.depositphotos.com/3418487/46994/i/450/depositphotos_469941170-stock-photo-land-plot-aerial-view-identify.jpg"
               alt="Field Map"
               className="w-full rounded-md mb-4"
-            ><MapWithDrawing setCoordinates={setCoordinates}/></div>
+            ><MapWithDrawing setCoordinates={setCoordinates} /></div>
 
             {/* Crop Details */}
-            <div className="mb-4 mt-48">
+            <div className="mb-4 mt-12">
               <h2 className="text-sm font-semibold text-gray-600 mb-2">Crop Details</h2>
               <div className="flex space-x-2">
-                <select
-                  className="w-1/2 p-2 border rounded-md"
-                  value={field.cropType}
-                  onChange={(e) => handleChange(index, "cropType", e.target.value)}
-                >
-                  <option>Crop</option>
-                  <option>Wheat</option>
-                  <option>Rice</option>
-                  <option>Cotton</option>
-                </select>
-                <input
-                  type="date"
-                  className="w-1/2 p-2 border rounded-md"
-                  value={field.sowingDate}
-                  onChange={(e) => handleChange(index, "sowingDate", e.target.value)}
-                />
+                <div className="flex flex-col w-1/2">
+                  <label htmlFor={`cropType-${index}`} className="text-xs text-gray-600 mb-1">Crop Type</label>
+                  <select
+                    id={`cropType-${index}`}
+                    className="p-2 border rounded-md"
+                    value={field.cropType}
+                    onChange={(e) => handleChange(index, "cropType", e.target.value)}
+                  >
+                    <option>Crop</option>
+                    <option>Wheat</option>
+                    <option>Rice</option>
+                    <option>Cotton</option>
+                  </select>
+                </div>
+                <div className="flex flex-col w-1/2">
+                  <label htmlFor={`sowingDate-${index}`} className="text-xs text-gray-600 mb-1">Sowing Date</label>
+                  <input
+                    id={`sowingDate-${index}`}
+                    type="date"
+                    className="p-2 border rounded-md"
+                    value={field.sowingDate}
+                    onChange={(e) => handleChange(index, "sowingDate", e.target.value)}
+                  />
+                </div>
               </div>
             </div>
 
@@ -89,26 +97,35 @@ export default function AddField({}) {
             <div className="mb-4">
               <h2 className="text-sm font-semibold text-gray-600 mb-2">Pump Details</h2>
               <div className="flex space-x-2">
-                <select
-                  className="w-1/2 p-2 border rounded-md"
-                  value={field.pumpType}
-                  onChange={(e) => handleChange(index, "pumpType", e.target.value)}
-                >
-                  <option>Pump Type</option>
-                  <option>Submersible</option>
-                  <option>Openwell</option>
-                  <option>Diesel</option>
-                </select>
-                <input
-                  type="number"
-                  placeholder="Discharge Capacity"
-                  className="w-1/2 p-2 border rounded-md"
-                  value={field.dischargeCapacity}
-                  onChange={(e) => handleChange(index, "dischargeCapacity", e.target.value)}
-                />
+                <div className="flex flex-col w-1/2">
+                  <label htmlFor={`pumpType-${index}`} className="text-xs text-gray-600 mb-1">Pump Type</label>
+                  <select
+                    id={`pumpType-${index}`}
+                    className="p-2 border rounded-md"
+                    value={field.pumpType}
+                    onChange={(e) => handleChange(index, "pumpType", e.target.value)}
+                  >
+                    <option>Pump Type</option>
+                    <option>Submersible</option>
+                    <option>Openwell</option>
+                    <option>Diesel</option>
+                  </select>
+                </div>
+                <div className="flex flex-col w-1/2">
+                  <label htmlFor={`dischargeCapacity-${index}`} className="text-xs text-gray-600 mb-1">Discharge Capacity (LPM)</label>
+                  <input
+                    id={`dischargeCapacity-${index}`}
+                    type="number"
+                    placeholder="Discharge Capacity"
+                    className="p-2 border rounded-md"
+                    value={field.dischargeCapacity}
+                    onChange={(e) => handleChange(index, "dischargeCapacity", e.target.value)}
+                  />
+                </div>
               </div>
               <p className="text-xs text-gray-500 mt-1 ml-1">Liters per Minute</p>
             </div>
+
           </div>
         ))}
 

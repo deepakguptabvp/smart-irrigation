@@ -7,6 +7,7 @@ import {
     Marker,
 } from "@react-google-maps/api";
 import { FaSearchLocation } from "react-icons/fa";
+import { TbArrowBackUp } from "react-icons/tb";
 
 const containerStyle = {
     width: "100%",
@@ -95,14 +96,23 @@ const MapWithDrawing = ({ setCoordinates }) => {
             alert("Invalid latitude and longitude format.");
         }
     };
+    const handleDrawingStart = () => {
+        if (mapRef.current) {
+            mapRef.current.setOptions({ gestureHandling: "none" }); // stop map movement
+        }
+    };
 
+    const handleDrawingEnd = () => {
+        if (mapRef.current) {
+            mapRef.current.setOptions({ gestureHandling: "greedy" }); // allow interaction again
+        }
+    };
     return (
         <div className="w-full max-h-60 h-auto">
             {/* Navbar Filters */}
-            <div className="bg-white shadow-md px-3 py-4 flex flex-wrap items-center gap-4 justify-between">
+            <div className="bg-white shadow-md px-3 py-4 flex items-center gap-1.5 md:gap-2.5 justify-between">
                 {/* Search by place */}
-                <div className="flex items-center gap-2 flex-1 min-w-[220px]">
-                    <FaSearchLocation className="text-blue-600" />
+                <div className="flex items-center relative flex-1 min-w-[220px]">
                     <Autocomplete
                         onLoad={(ref) => (autocompleteRef.current = ref)}
                         onPlaceChanged={onPlaceChanged}
@@ -110,10 +120,12 @@ const MapWithDrawing = ({ setCoordinates }) => {
                         <input
                             type="text"
                             placeholder="Search location"
-                            className="p-2 w-full border border-gray-300 rounded-md focus:ring focus:ring-blue-400"
+                            className="p-2 pr-10 w-full border border-gray-300 rounded-md focus:ring focus:ring-blue-400"
                         />
                     </Autocomplete>
+                    {/* <FaSearchLocation className="text-blue-600 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" /> */}
                 </div>
+
 
                 {/* Save Button */}
                 <button
@@ -128,6 +140,16 @@ const MapWithDrawing = ({ setCoordinates }) => {
                 </button>
 
                 {/* Undo Button */}
+                <button
+                    onClick={handleUndo}
+                    disabled={polygons.length === 0}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium shadow transition ${polygons.length === 0
+                        ? "bg-gray-100 text-white cursor-not-allowed"
+                        : "bg-red-600 text-white hover:bg-red-700"
+                        }`}
+                >
+                    <TbArrowBackUp className="text-lg text-black" />
+                </button>
 
             </div>
 
@@ -136,21 +158,27 @@ const MapWithDrawing = ({ setCoordinates }) => {
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={center}
-                    zoom={8}
-                    mapTypeId="satellite"
-                    onLoad={(map) => (mapRef.current = map)}
-                    options={{
-                        mapTypeControl: false, // Hide the map/satellite toggle
+                    zoom={12}
+                    mapTypeId="hybrid"
+                    onLoad={(map) => {
+                        mapRef.current = map;
+                        map.setMapTypeId("hybrid"); // 👈 Enforces satellite mode again
+                    }}
+                    options={{ // Hide the map/satellite toggle
                         streetViewControl: false,  // 👈 disables all gestures (including 2-finger move)
                         draggable: true,
-                        gestureHandling: "cooperative", // 👈 Allows gestures only with 2 fingers
+                        mapTypeControl: false,
                         draggable: true,                // 👈 Required for DrawingManager to work
                         scrollwheel: false,
                     }}
                 >
                     {selectedLocation && <Marker position={selectedLocation} />}
                     <DrawingManager
-                        onPolygonComplete={handlePolygonComplete}
+                        onPolygonComplete={(polygon) => {
+                            handlePolygonComplete(polygon);
+                            handleDrawingEnd(); // gestureHandling back to normal
+                        }}
+                        onOverlayComplete={() => handleDrawingStart()} // disable map drag when starting
                         options={{
                             drawingControl: true,
                             drawingControlOptions: {
@@ -168,18 +196,10 @@ const MapWithDrawing = ({ setCoordinates }) => {
                             },
                         }}
                     />
+
                 </GoogleMap>
             </div>
-            <button
-                onClick={handleUndo}
-                disabled={polygons.length === 0}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium shadow transition ${polygons.length === 0
-                    ? "bg-gray-400 text-white cursor-not-allowed"
-                    : "bg-red-600 text-white hover:bg-red-700"
-                    }`}
-            >
-                Undo
-            </button>
+
         </div>
     );
 };
