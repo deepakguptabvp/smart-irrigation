@@ -39,7 +39,7 @@ const Sidebar = ({
   return (
     <div style={{zIndex:250}} 
       className={`${sidebarOpen ? "block" : "hidden"
-        } fixed z-30 h-[100vh] md:static md:block top-0 left-0 md:w-64 w-4/5  bg-white shadow-lg p-3 transition-all duration-300 ease-in-out`}
+        } fixed z-30 min-h-[100vh] md:static md:block top-0 left-0 md:w-64 w-4/5  bg-white shadow-lg p-3 transition-all duration-300 ease-in-out`}
     >
       {/* Close Button (Mobile only) */}
       <div className="md:hidden flex justify-end mb-2">

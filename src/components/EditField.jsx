@@ -1,99 +1,177 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import UserAxiosAPI from "../api/userAxiosAPI";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { webState } from "../App";
+import MapWithDrawing from "./Maps";
 
-const EditField = () => {
-  const [fieldData, setFieldData] = useState({
-    fieldName: "",
-    area: "",
-    cropType: "",
-  });
+export default function AddField({ existingField = null, isEdit = false }) {
+  const { user } = useContext(webState);
+  const axios = UserAxiosAPI();
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFieldData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const [coordinates, setCoordinates] = useState(null);
+  const [fields, setFields] = useState([
+    { cropType: "", sowingDate: "", pumpType: "", dischargeCapacity: "" }
+  ]);
+
+  // Prefill data in edit mode
+  useEffect(() => {
+    if (isEdit && existingField) {
+      setFields([{
+        cropType: existingField.cropType || "",
+        sowingDate: existingField.sowingDate?.split("T")[0] || "",
+        pumpType: existingField.pumpType || "",
+        dischargeCapacity: existingField.dischargeCapacity || ""
+      }]);
+      setCoordinates(existingField.coordinates);
+    }
+  }, [isEdit, existingField]);
+
+  const handleChange = (index, key, value) => {
+    const updated = [...fields];
+    updated[index][key] = value;
+    setFields(updated);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Submit logic here (e.g., send to backend or save to state)
-    console.log("Submitted:", fieldData);
+  const addNewField = () => {
+    setFields([...fields, { cropType: "", sowingDate: "", pumpType: "", dischargeCapacity: "" }]);
+  };
+
+  const handleSubmit = async () => {
+    if (!coordinates) {
+      toast.error("Draw a polygon of your field!");
+      return;
+    }
+
+    try {
+      if (isEdit && existingField?._id) {
+        await axios.put(`/fields/update-field/${existingField._id}`, {
+          userId: user?._id,
+          coordinates,
+          ...fields[0]
+        });
+        toast.success("Field updated successfully!");
+      } else {
+        for (let field of fields) {
+          await axios.post("/fields/add-field", {
+            userId: user?._id,
+            coordinates,
+            ...field
+          });
+        }
+        toast.success("Fields added successfully!");
+      }
+
+      navigate('/landingpage');
+      window.location.reload();
+    } catch (err) {
+      toast.error("Something went wrong!");
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white shadow-md rounded-lg">
-      <h2 className="text-xl font-bold text-green-700 mb-4">
-        Edit Field Details
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Field Name */}
-        <div>
-          <label
-            htmlFor="fieldName"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Field Name
-          </label>
-          <input
-            type="text"
-            id="fieldName"
-            name="fieldName"
-            value={fieldData.fieldName}
-            onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-            placeholder="e.g., South Plot"
+    <div className="min-h-screen bg-green-50 flex flex-col justify-center items-center">
+      <div className="w-full h-auto max-w-sm rounded-lg shadow-md py-4 p-2 md:p-4">
+        <div className="flex items-center space-x-14 mb-4">
+          <img
+            src="https://www.smartlogger.tn/smart-irrigation-admin/assets/img/brand/logo-full.png"
+            alt="Logo"
+            className="w-14 h-14 relative left-0"
           />
+          <h1 className="text-xl font-bold text-green-800">{isEdit ? "Edit Field" : "Add Field"}</h1>
         </div>
 
-        {/* Area */}
-        <div>
-          <label
-            htmlFor="area"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Area (in acres)
-          </label>
-          <input
-            type="number"
-            id="area"
-            name="area"
-            value={fieldData.area}
-            onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-            placeholder="e.g., 2.5"
-          />
-        </div>
+        {fields.map((field, index) => (
+          <div key={index}>
+            <div className="w-full rounded-md mb-4">
+              <MapWithDrawing setCoordinates={setCoordinates} defaultCoordinates={coordinates} />
+            </div>
 
-        {/* Crop Type */}
-        <div>
-          <label
-            htmlFor="cropType"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Crop Type
-          </label>
-          <input
-            type="text"
-            id="cropType"
-            name="cropType"
-            value={fieldData.cropType}
-            onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-            placeholder="e.g., Wheat"
-          />
-        </div>
+            {/* Crop Details */}
+            <div className="mb-4 mt-28">
+              <h2 className="text-sm font-semibold text-gray-600 mb-2">Crop Details</h2>
+              <div className="flex space-x-2">
+                <div className="flex flex-col w-1/2">
+                  <label htmlFor={`cropType-${index}`} className="text-xs text-gray-600 mb-1">Crop Type</label>
+                  <select
+                    id={`cropType-${index}`}
+                    className="p-2 border rounded-md"
+                    value={field.cropType}
+                    onChange={(e) => handleChange(index, "cropType", e.target.value)}
+                  >
+                    <option>Crop</option>
+                    <option>Wheat</option>
+                    <option>Rice</option>
+                    <option>Cotton</option>
+                  </select>
+                </div>
+                <div className="flex flex-col w-1/2">
+                  <label htmlFor={`sowingDate-${index}`} className="text-xs text-gray-600 mb-1">Sowing Date</label>
+                  <input
+                    id={`sowingDate-${index}`}
+                    type="date"
+                    className="p-2 border rounded-md"
+                    value={field.sowingDate}
+                    onChange={(e) => handleChange(index, "sowingDate", e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition"
-        >
-          Save Field
-        </button>
-      </form>
+            {/* Pump Details */}
+            <div className="mb-4">
+              <h2 className="text-sm font-semibold text-gray-600 mb-2">Pump Details</h2>
+              <div className="flex space-x-2">
+                <div className="flex flex-col w-1/2">
+                  <label htmlFor={`pumpType-${index}`} className="text-xs text-gray-600 mb-1">Pump Type</label>
+                  <select
+                    id={`pumpType-${index}`}
+                    className="p-2 border rounded-md"
+                    value={field.pumpType}
+                    onChange={(e) => handleChange(index, "pumpType", e.target.value)}
+                  >
+                    <option>Pump Type</option>
+                    <option>Submersible</option>
+                    <option>Openwell</option>
+                    <option>Diesel</option>
+                  </select>
+                </div>
+                <div className="flex flex-col w-1/2">
+                  <label htmlFor={`dischargeCapacity-${index}`} className="text-xs text-gray-600 mb-1">Discharge Capacity (LPM)</label>
+                  <input
+                    id={`dischargeCapacity-${index}`}
+                    type="number"
+                    placeholder="Discharge Capacity"
+                    className="p-2 border rounded-md"
+                    value={field.dischargeCapacity}
+                    onChange={(e) => handleChange(index, "dischargeCapacity", e.target.value)}
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-1 ml-1">Liters per Minute</p>
+            </div>
+          </div>
+        ))}
+
+        {/* Buttons */}
+        <div className="flex justify-between items-center">
+          {!isEdit && (
+            <button
+              onClick={addNewField}
+              className="bg-white text-green-600 border border-green-600 rounded-full w-10 h-10 flex items-center justify-center text-xl font-bold"
+            >
+              +
+            </button>
+          )}
+          <button
+            onClick={handleSubmit}
+            className="bg-green-600 text-white px-4 py-2 rounded-md w-full"
+          >
+            {isEdit ? "Update Field" : "Submit"}
+          </button>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default EditField;
+}

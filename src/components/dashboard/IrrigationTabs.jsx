@@ -36,6 +36,7 @@ const IrrigationTabs = ({ tab, sowingDate }) => {
   }, [sowingDate]);
 
   const currentWeek = Math.floor(currentDay / 7);
+  const currentMnth = Math.floor(currentDay / 30);
   const getIrrigation = (day) => {
     const week = Math.floor(day / 7);
     const data = irrigationSchedule[week] || { inches: 0, liters: 0 };
@@ -81,10 +82,10 @@ const IrrigationTabs = ({ tab, sowingDate }) => {
       {tab === "today" && (() => {
         const todayData = getIrrigation(currentDay);
         return (
-          <div className="mt-4 text-center flex justify-center space-y-3">
+          <div className="mt-4 w-full text-center space-y-3">
             {todayData.inches > 0 ? (
               <div className="flex flex-col justify-center my-8 gap-6">
-                <div className="flex justify-between">
+                <div className="flex justify-around">
                   <p className="text-xs text-gray-500">Week {currentWeek+1}, Day {currentDay}</p>
                   <div className="mt-2 flex items-center justify-center gap-2 text-sm font-medium">
                     <FaArrowUpFromWaterPump className="text-3xl" />
@@ -95,7 +96,7 @@ const IrrigationTabs = ({ tab, sowingDate }) => {
 
                 </div>
 
-                <div className="flex justify-between">
+                <div className="flex justify-around">
 
                   {/* Liters and Time */}
 
@@ -167,7 +168,7 @@ const IrrigationTabs = ({ tab, sowingDate }) => {
         tab === "monthly" && (
           <div className="grid grid-cols-7 gap-0.5 md:gap-2 text-xs text-center mt-4">
             {[...Array(30)].map((_, i) => {
-              const dayNumber = i + 1;
+              const dayNumber = currentMnth*30 + i + 1;
               const { inches, liters, note } = getIrrigation(i);
               const isToday = dayNumber === currentDay;
               return (
