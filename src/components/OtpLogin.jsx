@@ -82,9 +82,7 @@ export default function OtpLogin({user, setUser}) {
       toast.error("Invalid OTP");
       return;
     }
-
     setLoading(true);
-
     try {
       const response = await window.OTPlessSignin.verify({
         channel: "PHONE",

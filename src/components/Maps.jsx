@@ -162,7 +162,7 @@ const MapWithDrawing = () => {
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={center}
-                    zoom={8}
+                    zoom={50}
                     onLoad={(map) => (mapRef.current = map)}
                 >
                     {selectedLocation && <Marker position={selectedLocation} />}
