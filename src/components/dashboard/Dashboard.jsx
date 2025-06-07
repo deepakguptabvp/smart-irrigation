@@ -193,10 +193,10 @@ const Dashboard = () => {
             </div>
 
             {/* Header */}
-            {!field ? <div className="flex justify-between items-center space-x-2">
-                <div className="w-3/4 flex-1 flex border border-gray-500 p-3 rounded-md items-center space-x-2">
-                    No field selected
-                </div>
+            {!field ? <div className="flex justify-center h-[50vh] text-lg md:text-2xl items-center w-full space-x-2">
+                {/* <div className="w-3/4 flex-1 flex border border-gray-500 p-3 rounded-md items-center space-x-2"> */}
+                    Please wait...
+                {/* </div> */}
             </div> :
                 !valid ? <div className="flex justify-between items-center h-full space-x-2">
                     <div className="w-3/4 flex-1 flex border border-gray-500 p-3 rounded-md items-center space-x-2">
