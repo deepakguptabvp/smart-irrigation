@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import OTPVerification from "./OTPVerification";
-import { cityStateData, indianStates } from "./data";
+import { blocks, districts } from "./data";
 
-export default function SignupForm({user, setUser}) {
+export default function SignupForm({ user, setUser }) {
   const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -17,7 +17,18 @@ export default function SignupForm({user, setUser}) {
   });
 
   const [errors, setErrors] = useState({});
-
+  const states = [...new Set(districts?.map(data => data.state))];
+  const cities = [
+    ...new Map(
+      districts?.map(item => [`${item.district}-${item.state}`, { city: item.district, state: item.state }])
+    ).values()
+  ];
+  const districtBlockPairs = blocks.flatMap(district =>
+    district.blockList.map(block => ({
+      district: district.name,
+      block: block.name
+    }))
+  );
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -75,7 +86,6 @@ export default function SignupForm({user, setUser}) {
       setShowOtpScreen(true);
     }
   };
-
   if (showOtpScreen) {
     return <OTPVerification formData={formData} user={user} setUser={setUser} />;
   }
@@ -179,7 +189,7 @@ export default function SignupForm({user, setUser}) {
             required
           >
             <option value="">State</option>
-            {indianStates.sort((a, b) => a.localeCompare(b)).map((state,ndx) => <option key={ndx} value={state}>{state}</option>)}
+            {states.sort((a, b) => a.localeCompare(b)).map((state, ndx) => <option key={ndx} value={state}>{state}</option>)}
             {/* Add more */}
           </select>
           {errors.state && <p className="text-red-600 text-sm mt-1">{errors.state}</p>}
@@ -195,8 +205,8 @@ export default function SignupForm({user, setUser}) {
             required
           >
             <option value="">District</option>
-            {cityStateData
-              .filter((data) => formData.state!=="" ? data.state === formData.state : data.state) // ✅ Filter only if state is selected
+            {cities
+              .filter((data) => formData.state !== "" ? data.state === formData.state : data.state) // ✅ Filter only if state is selected
               .sort((a, b) => a.city.localeCompare(b.city)) // ✅ Sort cities alphabetically
               .map((data, ndx) => (
                 <option key={ndx} value={data.city}>
@@ -218,25 +228,36 @@ export default function SignupForm({user, setUser}) {
             required
           >
             <option value="">Block/Tehsil</option>
-            <option value="Bakshi Ka Talab">Bakshi Ka Talab</option>
+            {districtBlockPairs
+              ?.filter((item) => item.district.toLowerCase() === formData.district.toLowerCase())
+              .sort((a, b) => a.block.localeCompare(b.block))
+              .map((item, index) => (
+                <option key={index} value={item.block}>
+                  {item.block}
+                </option>
+              ))}
           </select>
-          {errors.tehsil && <p className="text-red-600 text-sm mt-1">{errors.tehsil}</p>}
+          {errors.tehsil && (
+            <p className="text-red-600 text-sm mt-1">{errors.tehsil}</p>
+          )}
         </div>
 
         <div>
-          <select
+          <input
+            type="text"
             name="village"
             value={formData.village}
             onChange={handleChange}
+            placeholder="Village"
             className={`w-full px-4 py-2 border rounded-md text-gray-700 ${errors.village ? "border-red-500" : ""
               }`}
             required
-          >
-            <option value="">Village</option>
-            <option value="Rampur">Rampur</option>
-          </select>
-          {errors.village && <p className="text-red-600 text-sm mt-1">{errors.village}</p>}
+          />
+          {errors.village && (
+            <p className="text-red-600 text-sm mt-1">{errors.village}</p>
+          )}
         </div>
+
 
         <div>
           <select

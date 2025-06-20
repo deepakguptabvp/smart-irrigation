@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-// import axios from "axios";
+import Cookies from "js-cookie";
 import UserAxiosAPI from "../api/userAxiosAPI";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,11 @@ export default function AddField({ }) {
   const { user } = useContext(webState);
   const axios = UserAxiosAPI();
   const navigate = useNavigate();
+  const handleConfirm = () => {
+    if(!confirm("Are you sure logging out?")) return
+    Cookies.remove("SIUserToken");// callback after logout
+    navigate("/");
+  };
   const [coordinates, setCoordinates] = useState(null)
   const [fields, setFields] = useState([
     { cropType: "", sowingDate: "", pumpType: "", dischargeCapacity: "" }
@@ -53,6 +58,7 @@ export default function AddField({ }) {
             className="w-14 h-14 relative left-0"
           />
           <h1 className="text-xl font-bold text-green-800">Add Field</h1>
+          <button onClick={handleConfirm} className="bg-blue-600 text-white cursor-pointer rounded p-2">Logout</button>
         </div>
         {fields.map((field, index) => (
           <div key={index}>
