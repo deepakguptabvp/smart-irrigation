@@ -11,7 +11,7 @@ import { TbArrowBackUp } from "react-icons/tb";
 
 const containerStyle = {
     width: "100%",
-    height: "35vh",
+    height: "30vh",
 };
 
 const defaultCenter = {
@@ -108,7 +108,7 @@ const MapWithDrawing = ({ setCoordinates }) => {
         }
     };
     return (
-        <div className="w-full max-h-60 h-auto">
+        <div className="w-full mb-10 max-h-[40vh]">
             {/* Navbar Filters */}
             <div className="bg-white shadow-md px-3 py-4 flex items-center gap-1.5 md:gap-2.5 justify-between">
                 {/* Search by place */}
@@ -154,11 +154,12 @@ const MapWithDrawing = ({ setCoordinates }) => {
             </div>
 
             {/* Map */}
-            <div className="max-h-[40vh]">
+            <div className="max-h-[25vh] md:max-h-[40vh]">
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={center}
                     zoom={12}
+                    
                     mapTypeId="hybrid"
                     onLoad={(map) => {
                         mapRef.current = map;

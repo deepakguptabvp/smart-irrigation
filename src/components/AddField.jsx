@@ -27,7 +27,7 @@ export default function AddField({ }) {
   };
 
   const addNewField = () => {
-    setFields([...fields, { cropType: "", sowingDate: "", pumpType: "", dischargeCapacity: "" }]);
+    setFields([...fields, { cropType: "", sowingDate: "", pumpType: "", dischargeCapacity: "", pumpNumber }]);
   };
 
   const handleSubmit = async () => {
@@ -127,9 +127,25 @@ export default function AddField({ }) {
                     value={field.dischargeCapacity}
                     onChange={(e) => handleChange(index, "dischargeCapacity", e.target.value)}
                   />
+                  <p className="text-xs text-gray-500 mt-1 ml-1">Liters per Minute</p>
+                </div>
+                
+              </div>
+              <div className="my-4 mt-2">
+                <div className="flex flex-col w-1/2">
+                  <label htmlFor={`pumpNumber`} className="text-xs text-gray-600 mb-1">Pump Number</label>
+                  <input
+                    id={`pumpNumber`}
+                    type="number"
+                    placeholder="Pump Number"
+                    className="p-2 border rounded-md"
+                    value={field.pumpNumber}
+                    onChange={(e) => handleChange(index, "pumpNumber", e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 mt-1 ml-1">10 digit Number</p>
                 </div>
               </div>
-              <p className="text-xs text-gray-500 mt-1 ml-1">Liters per Minute</p>
+              
             </div>
 
           </div>
