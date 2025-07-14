@@ -133,11 +133,11 @@ export default function AddField({ }) {
               </div>
               <div className="my-4 mt-2">
                 <div className="flex flex-col w-1/2">
-                  <label htmlFor={`pumpNumber`} className="text-xs text-gray-600 mb-1">Pump Number</label>
+                  <label htmlFor={`pumpNumber`} className="text-xs text-gray-600 mb-1">Pump Controller's Number</label>
                   <input
                     id={`pumpNumber`}
                     type="number"
-                    placeholder="Pump Number"
+                    placeholder="Pump Controller's Number"
                     className="p-2 border rounded-md"
                     value={field.pumpNumber}
                     onChange={(e) => handleChange(index, "pumpNumber", e.target.value)}

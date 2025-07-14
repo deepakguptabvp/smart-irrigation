@@ -3,6 +3,9 @@ import { PiDropThin } from "react-icons/pi";
 import { FaArrowUpFromWaterPump } from "react-icons/fa6";
 import { TbDropletOff } from "react-icons/tb";
 import { TfiAlarmClock } from "react-icons/tfi";
+import SendSMSButton from "../SendSMS";
+import { useContext } from "react";
+import { webState } from "../../App";
 
 const irrigationSchedule = [
   { week: 0, description: "Pre-sowing", inches: 3, liters: 308370 },
@@ -25,7 +28,7 @@ const irrigationSchedule = [
 ];
 
 const IrrigationTabs = ({ tab, sowingDate }) => {
-  // const [tab, setTab] = useState("today");
+  const {field} = useContext(webState);
   const [currentDay, setCurrentDay] = useState(0);
 
   useEffect(() => {
@@ -115,7 +118,7 @@ const IrrigationTabs = ({ tab, sowingDate }) => {
                     <button className="flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-gray-800 mt-1">
                       <TfiAlarmClock className="text-4xl text-gray-800" />
                     </button>
-                    Start Timer
+                    <SendSMSButton phoneNumber={field?.pumpNumber} message={`A1#${getTime(todayData.liters)}`} btnText={"Turn on Pump"}/>
                   </div>
                 </div>
               </div>
