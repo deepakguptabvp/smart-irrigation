@@ -5,19 +5,21 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { webState } from "../App";
 import MapWithDrawing from "./Maps";
+import { crops } from "./data";
 
 export default function AddField({ }) {
   const { user } = useContext(webState);
   const axios = UserAxiosAPI();
   const navigate = useNavigate();
+  const cropTypes = [...new Set(crops.map(crop => crop.cropType))];
   const handleConfirm = () => {
-    if(!confirm("Are you sure logging out?")) return
+    if (!confirm("Are you sure logging out?")) return
     Cookies.remove("SIUserToken");// callback after logout
     navigate("/");
   };
   const [coordinates, setCoordinates] = useState(null)
   const [fields, setFields] = useState([
-    { cropType: "", sowingDate: "", pumpType: "", dischargeCapacity: "" }
+    { cropType: "", sowingDate: "", pumpType: "", dischargeCapacity: "", pumpNumber: "", cropName: '' }
   ]);
 
   const handleChange = (index, key, value) => {
@@ -27,7 +29,7 @@ export default function AddField({ }) {
   };
 
   const addNewField = () => {
-    setFields([...fields, { cropType: "", sowingDate: "", pumpType: "", dischargeCapacity: "", pumpNumber }]);
+    setFields([...fields, { cropType: "", sowingDate: "", pumpType: "", dischargeCapacity: "", pumpNumber: '', cropName: '' }]);
   };
 
   const handleSubmit = async () => {
@@ -47,6 +49,7 @@ export default function AddField({ }) {
     window.location.reload();
   };
 
+
   return (
     <div className="min-h-screen bg-green-50 flex flex-col justify-center items-center">
       <div className="w-full h-auto max-w-sm rounded-lg shadow-md py-4 p-2 md:p-4">
@@ -60,96 +63,124 @@ export default function AddField({ }) {
           <h1 className="text-xl font-bold text-green-800">Add Field</h1>
           <button onClick={handleConfirm} className="bg-blue-600 text-white cursor-pointer rounded p-2">Logout</button>
         </div>
-        {fields.map((field, index) => (
-          <div key={index}>
-            <div
-              src="https://st2.depositphotos.com/3418487/46994/i/450/depositphotos_469941170-stock-photo-land-plot-aerial-view-identify.jpg"
-              alt="Field Map"
-              className="w-full rounded-md mb-4"
-            ><MapWithDrawing setCoordinates={setCoordinates} /></div>
+        {fields.map((field, index) => {
+          const cropNames = crops
+            .filter(crop => crop.cropType === field.cropType)
+            .map(crop => crop.cropName);
+          return (
+            <div key={index}>
+              <div
+                src="https://st2.depositphotos.com/3418487/46994/i/450/depositphotos_469941170-stock-photo-land-plot-aerial-view-identify.jpg"
+                alt="Field Map"
+                className="w-full rounded-md mb-4"
+              ><MapWithDrawing setCoordinates={setCoordinates} /></div>
 
-            {/* Crop Details */}
-            <div className="mb-4 mt-12">
-              <h2 className="text-sm font-semibold text-gray-600 mb-2">Crop Details</h2>
-              <div className="flex space-x-2">
-                <div className="flex flex-col w-1/2">
-                  <label htmlFor={`cropType-${index}`} className="text-xs text-gray-600 mb-1">Crop Type</label>
-                  <select
-                    id={`cropType-${index}`}
-                    className="p-2 border rounded-md"
-                    value={field.cropType}
-                    onChange={(e) => handleChange(index, "cropType", e.target.value)}
-                  >
-                    <option>Crop</option>
-                    <option>Wheat</option>
-                    <option>Rice</option>
-                    <option>Cotton</option>
-                  </select>
-                </div>
-                <div className="flex flex-col w-1/2">
-                  <label htmlFor={`sowingDate-${index}`} className="text-xs text-gray-600 mb-1">Sowing Date</label>
-                  <input
-                    id={`sowingDate-${index}`}
-                    type="date"
-                    className="p-2 border rounded-md"
-                    value={field.sowingDate}
-                    onChange={(e) => handleChange(index, "sowingDate", e.target.value)}
-                  />
+              {/* Crop Details */}
+              <div className="mb-4 mt-12">
+                <h2 className="text-sm font-semibold text-gray-600 mb-2">Crop Details</h2>
+                <div className="flex space-x-2">
+                  <div className="flex gap-4 w-full">
+                    {/* Crop Type Select */}
+                    <div className="flex flex-col w-1/2">
+                      <label htmlFor={`cropType-${index}`} className="text-xs text-gray-600 mb-1">Crop Type</label>
+                      <select
+                        id={`cropType-${index}`}
+                        className="p-2 border rounded-md"
+                        value={field.cropType}
+                        onChange={(e) => handleChange(index, "cropType", e.target.value)}
+                      >
+                        <option value="">Select Crop Type</option>
+                        {cropTypes.map((type, idx) => (
+                          <option key={idx} value={type}>{type}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Crop Name Select */}
+                    <div className="flex flex-col w-1/2">
+                      <label htmlFor={`cropName-${index}`} className="text-xs text-gray-600 mb-1">Crop Name</label>
+                      <select
+                        id={`cropName-${index}`}
+                        className="p-2 border rounded-md"
+                        value={field.cropName}
+                        onChange={(e) => handleChange(index, "cropName", e.target.value)}
+                        disabled={!field.cropType}
+                      >
+                        <option value="">Select Crop Name</option>
+                        {cropNames.map((name, idx) => (
+                          <option key={idx} value={name}>{name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  
                 </div>
               </div>
+
+              {/* Pump Details */}
+              <div className="mb-4">
+                <h2 className="text-sm font-semibold text-gray-600 mb-2">Pump Details</h2>
+                <div className="flex space-x-2">
+                  <div className="flex flex-col w-1/2">
+                    <label htmlFor={`pumpType-${index}`} className="text-xs text-gray-600 mb-1">Pump Type</label>
+                    <select
+                      id={`pumpType-${index}`}
+                      className="p-2 border rounded-md"
+                      value={field.pumpType}
+                      onChange={(e) => handleChange(index, "pumpType", e.target.value)}
+                    >
+                      <option>Pump Type</option>
+                      <option>Submersible</option>
+                      <option>Openwell</option>
+                      <option>Diesel</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col w-1/2">
+                    <label htmlFor={`dischargeCapacity-${index}`} className="text-xs text-gray-600 mb-1">Discharge Capacity (LPM)</label>
+                    <input
+                      id={`dischargeCapacity-${index}`}
+                      type="number"
+                      placeholder="Discharge Capacity"
+                      className="p-2 border rounded-md"
+                      value={field.dischargeCapacity}
+                      onChange={(e) => handleChange(index, "dischargeCapacity", e.target.value)}
+                    />
+                    <p className="text-xs text-gray-500 mt-1 ml-1">Liters per Minute</p>
+                  </div>
+
+                </div>
+                <div className="my-4 mt-2">
+                  <div className="flex space-x-2">
+                  <div className="flex flex-col w-[49%]">
+                    <label htmlFor={`pumpNumber`} className="text-xs text-gray-600 mb-1">Pump Controller's Number</label>
+                    <input
+                      id={`pumpNumber`}
+                      type="number"
+                      placeholder="Pump Controller's Number"
+                      className="p-2 border rounded-md"
+                      value={field.pumpNumber}
+                      onChange={(e) => handleChange(index, "pumpNumber", e.target.value)}
+                    />
+                    <p className="text-xs text-gray-500 mt-1 ml-1">10 digit Number</p>
+                  </div>
+                  <div className="flex flex-col w-[49%]">
+                    <label htmlFor={`sowingDate-${index}`} className="text-xs text-gray-600 mb-1">Sowing Date</label>
+                    <input
+                      id={`sowingDate-${index}`}
+                      type="date"
+                      className="p-2 border rounded-md"
+                      value={field.sowingDate}
+                      onChange={(e) => handleChange(index, "sowingDate", e.target.value)}
+                    />
+                  </div>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
-
-            {/* Pump Details */}
-            <div className="mb-4">
-              <h2 className="text-sm font-semibold text-gray-600 mb-2">Pump Details</h2>
-              <div className="flex space-x-2">
-                <div className="flex flex-col w-1/2">
-                  <label htmlFor={`pumpType-${index}`} className="text-xs text-gray-600 mb-1">Pump Type</label>
-                  <select
-                    id={`pumpType-${index}`}
-                    className="p-2 border rounded-md"
-                    value={field.pumpType}
-                    onChange={(e) => handleChange(index, "pumpType", e.target.value)}
-                  >
-                    <option>Pump Type</option>
-                    <option>Submersible</option>
-                    <option>Openwell</option>
-                    <option>Diesel</option>
-                  </select>
-                </div>
-                <div className="flex flex-col w-1/2">
-                  <label htmlFor={`dischargeCapacity-${index}`} className="text-xs text-gray-600 mb-1">Discharge Capacity (LPM)</label>
-                  <input
-                    id={`dischargeCapacity-${index}`}
-                    type="number"
-                    placeholder="Discharge Capacity"
-                    className="p-2 border rounded-md"
-                    value={field.dischargeCapacity}
-                    onChange={(e) => handleChange(index, "dischargeCapacity", e.target.value)}
-                  />
-                  <p className="text-xs text-gray-500 mt-1 ml-1">Liters per Minute</p>
-                </div>
-                
-              </div>
-              <div className="my-4 mt-2">
-                <div className="flex flex-col w-1/2">
-                  <label htmlFor={`pumpNumber`} className="text-xs text-gray-600 mb-1">Pump Controller's Number</label>
-                  <input
-                    id={`pumpNumber`}
-                    type="number"
-                    placeholder="Pump Controller's Number"
-                    className="p-2 border rounded-md"
-                    value={field.pumpNumber}
-                    onChange={(e) => handleChange(index, "pumpNumber", e.target.value)}
-                  />
-                  <p className="text-xs text-gray-500 mt-1 ml-1">10 digit Number</p>
-                </div>
-              </div>
-              
-            </div>
-
-          </div>
-        ))}
+          )})}
 
         {/* Buttons */}
         <div className="flex justify-between items-center">

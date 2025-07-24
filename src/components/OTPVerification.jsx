@@ -103,7 +103,7 @@ export default function OTPVerification({ formData, user, setUser }) {
         setError(data.message || "Invalid OTP");
       }
     } catch (err) {
-      setError("Verification failed. Please try again.");
+      setError(err?.response?.data.message || "An error occurred");
       console.error("VERIFY OTP ERROR:", err);
     } finally {
       setVerifying(false);
@@ -155,17 +155,16 @@ export default function OTPVerification({ formData, user, setUser }) {
             <button
               onClick={sendOtp}
               disabled={resendTimer > 0 || sending}
-              className={`w-full py-2 rounded-md text-white transition ${
-                resendTimer > 0 || sending
+              className={`w-full py-2 rounded-md text-white transition ${resendTimer > 0 || sending
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700"
-              }`}
+                }`}
             >
               {sending
                 ? "Sending OTP..."
                 : resendTimer > 0
-                ? `Resend OTP in ${resendTimer}s`
-                : "Resend OTP"}
+                  ? `Resend OTP in ${resendTimer}s`
+                  : "Resend OTP"}
             </button>
           </>
         )}

@@ -6,7 +6,7 @@ export default function SignupForm({ user, setUser }) {
   const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    age: "",
+    // age: "",
     state: "",
     district: "",
     tehsil: "",
@@ -20,7 +20,7 @@ export default function SignupForm({ user, setUser }) {
   const states = [...new Set(districts?.map(data => data.state))];
   const cities = [
     ...new Map(
-      districts?.map(item => [`${item.district}-${item.state}`, { city: item.district, state: item.state }])
+      districts?.map(item => [`${item.district}-${item.state}`, { city: item.headquarters, state: item.state }])
     ).values()
   ];
   const districtBlockPairs = blocks.flatMap(district =>
@@ -56,9 +56,6 @@ export default function SignupForm({ user, setUser }) {
       newErrors.pincode = "Pincode is required";
     } else if (formData.pincode.length !== 6) {
       newErrors.pincode = "Pincode must be exactly 6 digits";
-    }
-    if (!formData.age) {
-      newErrors.age = "Age is required";
     }
     if (!formData.state) {
       newErrors.state = "State is required";
@@ -160,7 +157,7 @@ export default function SignupForm({ user, setUser }) {
           {errors.pincode && <p className="text-red-600 text-sm mt-1">{errors.pincode}</p>}
         </div>
 
-        <div>
+        {/* <div>
           <select
             name="age"
             value={formData.age}
@@ -177,7 +174,7 @@ export default function SignupForm({ user, setUser }) {
             ))}
           </select>
           {errors.age && <p className="text-red-600 text-sm mt-1">{errors.age}</p>}
-        </div>
+        </div> */}
 
         <div>
           <select
