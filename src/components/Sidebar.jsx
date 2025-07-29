@@ -61,7 +61,7 @@ const Sidebar = ({
 
       {/* Menu Items */}
       <MenuButton icon={MdEditNote} label="Dashboard" value="dashboard" />
-      <MenuButton icon={MdEditNote} label="Edit Field" value="addfield" />
+      <MenuButton icon={MdEditNote} label="Add New Field" value="addfield" />
       <MenuButton icon={() => <span className="text-md mr-2">💧</span>} label="Pump Calculator" value="pump-calculator" />
       <MenuButton icon={GrSatellite} label="Satellite Data" value="satellite-data" />
       <MenuButton icon={MdSensors} label="Soil Sensors" value="soil-sensors" />
