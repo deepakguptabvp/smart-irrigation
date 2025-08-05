@@ -77,13 +77,13 @@ const Dashboard = () => {
             console.log(field);
             const geometry = field?.coordinates;
 
+            const waether = await fetchWeather(field?.coordinates?.[0]?.[0]?.[1], field?.coordinates?.[0]?.[0]?.[0]);
+            setWeather(waether?.current);
+            setAdvice(getAdvice(current?.weathercode, current?.temperature));
             const ndmi = await fetchNDMI(geometry, field?.sowingDate);
             setNdmiImage(ndmi.image_base64);
             setNdmi(ndmi);
-            const waether = await fetchWeather(field?.coordinates?.[0]?.[0]?.[1], field?.coordinates?.[0]?.[0]?.[0]);
-            setWeather(waether?.current);
             const current = waether.current;
-            setAdvice(getAdvice(current?.weathercode, current?.temperature));
             console.log(waether, current)
         } catch (err) {
             console.error("Failed to fetch data", err);
