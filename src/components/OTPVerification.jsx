@@ -80,6 +80,7 @@ export default function OTPVerification({ formData, user, setUser }) {
         phone: formData.phone,
         otp,
         reqId,
+        signup:true
       });
 
       if (data?.success) {
