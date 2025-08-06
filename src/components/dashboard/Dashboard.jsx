@@ -12,6 +12,7 @@ import { IoMdWarning } from "react-icons/io";
 import { FaCloudSun, FaCloudRain, FaSun, FaCloud } from "react-icons/fa";
 import { webState } from "../../App";
 import IrrigationTabs from "./IrrigationTabs";
+import UserAxiosAPI from "../../api/userAxiosAPI";
 const schedule = [
     { "week": 1, "description": "Emergence", "inches": 1, "liters": 102790 },
     { "week": 2, "description": "Seedling", "inches": 1, "liters": 102790 },
@@ -40,7 +41,14 @@ const Dashboard = () => {
     const [dominantWeather, setDominantWeather] = useState("");
     const [ndmi, setNdmi] = useState("");
     const [valid, setValid] = useState(true);
-
+    const axios = UserAxiosAPI();
+    const saveField = async (data) => {
+        try {
+            const { fld } = await axios.post(`/fields/save-field/${data._id}`,data);
+        } catch (e) {
+            console.log(e);
+        }
+    }
     const getAdvice = (code, temp) => {
         if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) {
             // Rainy or drizzle
@@ -79,11 +87,16 @@ const Dashboard = () => {
 
             const waether = await fetchWeather(field?.coordinates?.[0]?.[0]?.[1], field?.coordinates?.[0]?.[0]?.[0]);
             setWeather(waether?.current);
-            setAdvice(getAdvice(current?.weathercode, current?.temperature));
-            const ndmi = await fetchNDMI(geometry, field?.sowingDate);
-            setNdmiImage(ndmi.image_base64);
-            setNdmi(ndmi);
             const current = waether.current;
+            setAdvice(getAdvice(current?.weathercode, current?.temperature));
+            console.log(getAdvice(current?.weathercode, current?.temperature))
+            const ndmi = await fetchNDMI(geometry, field?.sowingDate);
+            if (ndmi) {
+                saveField({ ...field, ndmi, weather })
+                setNdmiImage(ndmi.image_base64);
+                setNdmi(ndmi);
+            }
+            
             console.log(waether, current)
         } catch (err) {
             console.error("Failed to fetch data", err);
@@ -118,7 +131,8 @@ const Dashboard = () => {
         if (field) {
             const sowingDate = new Date(field.sowingDate);
             const today = new Date();
-
+            setNdmi(field.ndmi);
+            setWeather(field.weather);
             if (!isNaN(sowingDate)) {
                 if (sowingDate > today) {
                     setValid(false);
@@ -195,7 +209,7 @@ const Dashboard = () => {
             {/* Header */}
             {!field ? <div className="flex justify-center h-[50vh] text-lg md:text-2xl items-center w-full space-x-2">
                 {/* <div className="w-3/4 flex-1 flex border border-gray-500 p-3 rounded-md items-center space-x-2"> */}
-                    Please wait...
+                Please wait...
                 {/* </div> */}
             </div> :
                 !valid ? <div className="flex justify-between items-center h-full space-x-2">
@@ -220,7 +234,7 @@ const Dashboard = () => {
                     </div>}
 
                     {ndmi ? <NDMIMap coordinates={field?.coordinates?.[0]} legend={ndmi?.legend} area_summary_ha={ndmi?.area_summary_ha} ndmiBase64={ndmiImage} ndmiBounds={field?.coordinates} /> : <div className="flex justify-center my-6">Please Wait...</div>}
-                 
+
 
                     {/* Label */}
                     <div className="text-center text-sm font-semibold">
@@ -245,7 +259,7 @@ const Dashboard = () => {
                         </div>
 
                         {field && <IrrigationTabs sowingDate={field?.sowingDate} tab={tab} />}
-                        
+
 
 
                     </div>
