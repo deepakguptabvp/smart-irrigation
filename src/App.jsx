@@ -17,7 +17,7 @@ const webState = createContext();
 function App() {
   const [user, setUser] = useState(null);
   const [field, setField] = useState("");
-  console.log(user)
+  // console.log(user)
   return (
     <webState.Provider value={{setUser, user, field, setField}}>
        <LoadScript

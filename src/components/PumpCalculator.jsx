@@ -71,12 +71,12 @@ const PumpCalculator = () => {
           onChange={(e) => {
             const selectedField = JSON.parse(e.target.value);
             setSelectedPump(selectedField.pumpType);
-            console.log(selectedField)
+            // console.log(selectedField)
             setDischargeCapacity(selectedField.dischargeCapacity);
             const coords = selectedField.coordinates[0].map(([lng, lat]) => ({ latitude: lat, longitude: lng }));
             const areaSqMeters = getAreaOfPolygon(coords).toFixed(2);
             setArea(areaSqMeters);
-            console.log(selectedField); // Optional
+            // console.log(selectedField); // Optional
           }}
         >
           <option value="">Select Pump</option>

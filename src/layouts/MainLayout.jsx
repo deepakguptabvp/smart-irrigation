@@ -11,7 +11,7 @@ const UserLayout = () => {
       try {
         const { data } = await axios.get("/user/me");
   
-        console.log("User data:", data);
+        // console.log("User data:", data);
         setUser(data);
         setField(data?.fields?.[0]);
         if (data?.fields?.length) {

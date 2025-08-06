@@ -48,7 +48,7 @@ export default function OtpLogin() {
       const { data } = await axios.post("/otp/verify-otp", { phone, otp });
       if (data.success) {
         toast.success(data.message || "Login successful");
-        console.log(data)
+        // console.log(data)
         setUser(data.user);
         Cookies.set("SIUserToken", data.token, { expires: 30 });
         navigate(data.user?.fields?.length ? "/landingpage" : "/addfield");

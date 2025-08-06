@@ -82,22 +82,20 @@ const Dashboard = () => {
     };
     const fetchData = async () => {
         try {
-            console.log(field);
+            // console.log(field);
             const geometry = field?.coordinates;
 
             const waether = await fetchWeather(field?.coordinates?.[0]?.[0]?.[1], field?.coordinates?.[0]?.[0]?.[0]);
             setWeather(waether?.current);
             const current = waether.current;
             setAdvice(getAdvice(current?.weathercode, current?.temperature));
-            console.log(getAdvice(current?.weathercode, current?.temperature))
+            // console.log(getAdvice(current?.weathercode, current?.temperature))
             const ndmi = await fetchNDMI(geometry, field?.sowingDate);
             if (ndmi) {
                 saveField({ ...field, ndmi, weather })
                 setNdmiImage(ndmi.image_base64);
                 setNdmi(ndmi);
             }
-            
-            console.log(waether, current)
         } catch (err) {
             console.error("Failed to fetch data", err);
         } finally {
@@ -157,7 +155,7 @@ const Dashboard = () => {
     }, [field]);
     useEffect(() => {
         if (user && field) {
-            console.log(field)
+            // console.log(field)
             fetchData();
         }
     }, [user, field]);
